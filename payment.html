@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment | IBN FAHRESY TRADING ACADEMY</title>
+    <meta name="description" content="Complete your payment for IBN FAHRESY Trading Academy programs. USDT and Naira/Kuda options available.">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #0a0f0d;
+        color: #e0e6e3;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+        background: 
+            linear-gradient(rgba(22, 199, 132, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(22, 199, 132, 0.03) 1px, transparent 1px),
+            radial-gradient(ellipse at 30% 40%, rgba(22, 199, 132, 0.08), transparent 50%),
+            radial-gradient(ellipse at 70% 60%, rgba(0, 150, 255, 0.05), transparent 40%),
+            #0a0f0d;
+        background-size: 30px 30px, 30px 30px, 100% 100%, 100% 100%;
+        pointer-events: none;
+    }
+
+    .payment-container {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* =============================================
+       MOTIVATION - ANIMATED
+       ============================================= */
+    .motivation-slider {
+        background: rgba(22, 199, 132, 0.05);
+        border: 1px solid rgba(22, 199, 132, 0.1);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        text-align: center;
+        overflow: hidden;
+        min-height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .motivation-slider .quote {
+        font-size: 15px;
+        color: #bccac4;
+        font-style: italic;
+        transition: opacity 0.6s ease;
+        line-height: 1.6;
+    }
+
+    .motivation-slider .quote .gold {
+        color: #ffd700;
+        font-weight: 600;
+    }
+
+    .motivation-slider .quote .green {
+        color: #16c784;
+        font-weight: 600;
+    }
+
+    .motivation-slider .label {
+        font-size: 10px;
+        color: #6b7f77;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-top: 5px;
+        display: block;
+    }
+
+    /* =============================================
+       PAYMENT CARD
+       ============================================= */
+    .payment-card {
+        background: rgba(11, 23, 17, 0.95);
+        border: 1px solid rgba(22, 199, 132, 0.2);
+        border-radius: 20px;
+        padding: 35px 30px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+        backdrop-filter: blur(10px);
+        width: 100%;
+        position: relative;
+    }
+
+    .payment-card::before {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: 20%;
+        right: 20%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(22, 199, 132, 0.4), transparent);
+        border-radius: 50%;
+        filter: blur(1px);
+    }
+
+    .payment-card .logo-text {
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .payment-card .logo-text h1 {
+        color: #16c784;
+        font-size: 28px;
+        letter-spacing: 1px;
+    }
+
+    .payment-card .logo-text p {
+        color: #9db0a9;
+        font-size: 13px;
+    }
+
+    /* =============================================
+       PROGRAM SUMMARY
+       ============================================= */
+    .program-summary {
+        background: rgba(22, 199, 132, 0.08);
+        border: 1px solid rgba(22, 199, 132, 0.15);
+        border-radius: 12px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .program-summary h3 {
+        color: #16c784;
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .program-summary p {
+        color: #bccac4;
+        font-size: 14px;
+    }
+
+    .program-summary .amount {
+        color: #ffd700;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .program-summary .amount-ngn {
+        color: #16c784;
+        font-size: 18px;
+        font-weight: 600;
+        display: block;
+        margin-top: 4px;
+    }
+
+    /* =============================================
+       CURRENCY CONVERTER
+       ============================================= */
+    .currency-converter {
+        background: rgba(22, 199, 132, 0.05);
+        border: 1px solid rgba(22, 199, 132, 0.1);
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .currency-converter .rate-label {
+        color: #6b7f77;
+        font-size: 11px;
+    }
+    .currency-converter .rate-value {
+        color: #ffd700;
+        font-weight: 700;
+    }
+    .currency-converter .rate-ngn {
+        color: #16c784;
+        font-weight: 700;
+    }
+    .refresh-btn {
+        padding: 4px 14px;
+        background: rgba(22, 199, 132, 0.1);
+        color: #16c784;
+        border: 1px solid rgba(22, 199, 132, 0.2);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 11px;
+        transition: all 0.3s ease;
+    }
+    .refresh-btn:hover {
+        background: rgba(22, 199, 132, 0.2);
+    }
+
+    /* =============================================
+       PAYMENT METHODS
+       ============================================= */
+    .payment-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 10px;
+    }
+
+    .payment-option {
+        border: 2px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .payment-option:hover {
+        border-color: rgba(22, 199, 132, 0.4);
+    }
+
+    .payment-option.active {
+        border-color: #16c784;
+        box-shadow: 0 0 30px rgba(22, 199, 132, 0.1);
+    }
+
+    .payment-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.03);
+        transition: all 0.3s ease;
+    }
+
+    .payment-header:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .payment-header .left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .payment-header .icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .payment-header .icon.usdt {
+        background: rgba(0, 198, 255, 0.15);
+        border: 1px solid rgba(0, 198, 255, 0.3);
+    }
+
+    .payment-header .icon.naira {
+        background: rgba(168, 85, 247, 0.15);
+        border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .payment-header .title {
+        font-weight: 700;
+        font-size: 16px;
+    }
+
+    .payment-header .title small {
+        display: block;
+        font-weight: 400;
+        color: #6b7f77;
+        font-size: 12px;
+    }
+
+    .payment-header .arrow {
+        color: #6b7f77;
+        font-size: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .payment-option.active .payment-header .arrow {
+        transform: rotate(180deg);
+        color: #16c784;
+    }
+
+    .payment-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease, padding 0.4s ease;
+        padding: 0 20px;
+    }
+
+    .payment-option.active .payment-details {
+        max-height: 400px;
+        padding: 0 20px 20px 20px;
+    }
+
+    .payment-details .info-box {
+        background: rgba(7, 16, 12, 0.8);
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 10px;
+        border: 1px solid rgba(22, 199, 132, 0.1);
+    }
+
+    .payment-details .info-box .label {
+        font-size: 11px;
+        color: #6b7f77;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .payment-details .info-box .value {
+        font-size: 16px;
+        font-weight: 600;
+        word-break: break-all;
+        margin: 8px 0;
+        color: #fff;
+    }
+
+    .copy-btn {
+        width: 100%;
+        padding: 10px;
+        background: linear-gradient(135deg, #ffb300, #ff6f00);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+    }
+
+    .copy-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 179, 0, 0.3);
+    }
+
+    .copy-btn.copied {
+        background: #16c784;
+    }
+
+    .telegram-btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #0088cc, #006699);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+
+    .telegram-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 136, 204, 0.3);
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #6b7f77;
+    }
+
+    .back-link a {
+        color: #16c784;
+        text-decoration: none;
+    }
+
+    .back-link a:hover {
+        text-decoration: underline;
+    }
+
+    .copy-feedback {
+        text-align: center;
+        color: #16c784;
+        font-size: 13px;
+        margin-top: 5px;
+        display: none;
+    }
+
+    .copy-feedback.show {
+        display: block;
+    }
+
+    @media (max-width: 600px) {
+        .payment-card {
+            padding: 20px 16px;
+        }
+
+        .payment-header {
+            padding: 12px 14px;
+        }
+
+        .payment-header .title {
+            font-size: 14px;
+        }
+
+        .motivation-slider .quote {
+            font-size: 13px;
+        }
+        
+        .currency-converter {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="payment-container">
+
+    <!-- =============================================
+         ANIMATED MOTIVATION - MOVING QUOTES
+         ============================================= -->
+    <div class="motivation-slider">
+        <div>
+            <p id="paymentQuote" class="quote">
+                💎 "<span class="gold">The best investment you can make</span> 
+                <span class="green">is in your trading education.</span>"
+            </p>
+            <span class="label">📈 Trading Wisdom</span>
+        </div>
+    </div>
+
+    <!-- =============================================
+         PAYMENT CARD
+         ============================================= -->
+    <div class="payment-card">
+
+        <div class="logo-text">
+            <h1>💳 IBN_FAHRESY</h1>
+            <p>Complete your payment to access the program</p>
+        </div>
+
+        <div class="program-summary">
+            <h3 id="programName">Loading...</h3>
+            <p>
+                Amount: 
+                <span class="amount" id="programAmount">$0</span>
+                <span class="amount-ngn" id="programAmountNGN">₦0</span>
+            </p>
+            <p style="font-size:12px;color:#6b7f77;margin-top:5px;" id="studentNameDisplay">Student: Loading...</p>
+        </div>
+
+        <!-- =============================================
+             CURRENCY CONVERTER - NEW!
+             ============================================= -->
+        <div class="currency-converter">
+            <div>
+                <span class="rate-label">💵 Exchange Rate</span>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:3px;">
+                    <span style="font-size:13px;">1 USD = <span class="rate-value" id="paymentRate">₦1,550</span></span>
+                    <span style="font-size:13px;color:#6b7f77;">|</span>
+                    <span style="font-size:13px;">💲 <span id="paymentUSD">0</span> = ₦<span class="rate-ngn" id="paymentNGN">0</span></span>
+                </div>
+            </div>
+            <button class="refresh-btn" onclick="fetchPaymentRate()">🔄 Refresh</button>
+        </div>
+
+        <p style="color:#b7c2bc;font-size:13px;margin-bottom:12px;">👇 Select payment method</p>
+
+        <div class="payment-methods">
+
+            <!-- USDT Option -->
+            <div class="payment-option" id="usdtOption">
+                <div class="payment-header" onclick="togglePayment('usdt')">
+                    <div class="left">
+                        <div class="icon usdt">💎</div>
+                        <div class="title">
+                            USDT / TRC20
+                            <small>Send USDT on TRON network</small>
+                        </div>
+                    </div>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="payment-details">
+                    <div class="info-box">
+                        <div class="label">💳 USDT Address (TRC20)</div>
+                        <div class="value" id="usdtAddress">TLQqfq9b8GZvaD31FuzYh9USkgW64XmeKS</div>
+                        <button class="copy-btn" onclick="copyText('usdtAddress', this)">📋 Copy Address</button>
+                        <div class="copy-feedback" id="usdtFeedback">✅ Copied!</div>
+                    </div>
+                    <div class="info-box" style="margin-top:8px;">
+                        <div class="label">⛓️ Network</div>
+                        <div class="value" style="color:#00c6ff;font-size:14px;">TRON (TRC20)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Naira Option -->
+            <div class="payment-option" id="nairaOption">
+                <div class="payment-header" onclick="togglePayment('naira')">
+                    <div class="left">
+                        <div class="icon naira">🇳🇬</div>
+                        <div class="title">
+                            Naira / Kuda
+                            <small>Bank transfer (Nigeria)</small>
+                        </div>
+                    </div>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="payment-details">
+                    <div class="info-box">
+                        <div class="label">🏦 Account Number</div>
+                        <div class="value" id="kudaAddress">2034077388</div>
+                        <button class="copy-btn" onclick="copyText('kudaAddress', this)">📋 Copy Account Number</button>
+                        <div class="copy-feedback" id="kudaFeedback">✅ Copied!</div>
+                    </div>
+                    <div class="info-box" style="margin-top:8px;">
+                        <div class="label">🏛️ Bank</div>
+                        <div class="value" style="color:#a855f7;font-size:14px;">Kuda Bank</div>
+                    </div>
+                    <div class="info-box" style="margin-top:8px;">
+                        <div class="label">👤 Account Name</div>
+                        <div class="value" style="font-size:14px;">Musa Salman</div>
+                    </div>
+                    <div class="info-box" style="margin-top:8px;background:rgba(255,215,0,0.05);border-color:rgba(255,215,0,0.15);">
+                        <div class="label">💵 Amount in Naira</div>
+                        <div class="value" style="color:#ffd700;font-size:20px;" id="nairaAmountDisplay">₦0</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="telegram-btn" onclick="goToTelegram()">
+            ✈️ I Have Paid - Send Proof on Telegram
+        </button>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Home</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // =============================================
+    //   SUPABASE SETUP
+    // =============================================
+    const SUPABASE_URL = "https://symuzfndzqjrtavqfoqy.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7xhQ-vLiJIMpeFgvMR3q0Q_QVIQNb1Q";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    let exchangeRate = 1550;
+    let programPriceUSD = 0;
+    let programPriceNGN = 0;
+    let selectedProgram = '';
+
+    // =============================================
+    //   ANIMATED MOTIVATION QUOTES
+    // =============================================
+
+    const paymentQuotes = [
+        '💎 "<span class="gold">The best investment you can make</span> <span class="green">is in your trading education.</span>"',
+        '📚 "<span class="gold">Knowledge is the only thing</span> <span class="green">that compounds without risk.</span>"',
+        '🎯 "<span class="gold">Trading is not about being right</span> <span class="green">It\'s about being profitable.</span>"',
+        '⏳ "<span class="gold">Patience is not about waiting</span> <span class="green">it\'s about waiting with purpose.</span>"',
+        '📈 "<span class="gold">Price action is the language</span> <span class="green">of the market. Learn to speak it fluently.</span>"',
+        '💪 "<span class="gold">Every loss is a lesson</span> <span class="green">Every lesson is a step forward.</span>"',
+        '🌟 "<span class="gold">The trend is your friend</span> <span class="green">Respect it, and it will respect you.</span>"'
+    ];
+
+    let paymentQuoteIndex = 0;
+    const paymentQuoteElement = document.getElementById('paymentQuote');
+
+    if (paymentQuoteElement) {
+        setInterval(() => {
+            paymentQuoteElement.style.opacity = '0';
+            setTimeout(() => {
+                paymentQuoteIndex = (paymentQuoteIndex + 1) % paymentQuotes.length;
+                paymentQuoteElement.innerHTML = paymentQuotes[paymentQuoteIndex];
+                paymentQuoteElement.style.opacity = '1';
+            }, 400);
+        }, 4000);
+    }
+
+    // =============================================
+    //   LOAD PROGRAM FROM DATABASE
+    // =============================================
+
+async function loadProgram() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const programName = urlParams.get('program');
+    const username = urlParams.get('username');
+
+    console.log('🔍 Payment page received program:', programName);
+
+    if (!programName) {
+        document.getElementById('programName').innerText = 'Trading Program';
+        document.getElementById('programAmount').innerText = '$0';
+        document.getElementById('programAmountNGN').innerText = '₦0';
+        return;
+    }
+
+    selectedProgram = programName;
+    
+    // Convert to lowercase for matching
+    const lowerName = programName.toLowerCase();
+    
+    // Determine program type from the FULL name
+    let programType = '';
+    
+    // Check for signals FIRST (because "Signals Group" contains "group" too)
+    if (lowerName.includes('signal')) {
+        programType = 'signals';
+        console.log('✅ Detected as SIGNALS');
+    } 
+    // Check for mentorship
+    else if (lowerName.includes('mentorship')) {
+        programType = 'mentorship';
+        console.log('✅ Detected as MENTORSHIP');
+    } 
+    // Check for group
+    else if (lowerName.includes('group')) {
+        programType = 'group';
+        console.log('✅ Detected as GROUP');
+    } 
+    // If the program name is already a type
+    else if (lowerName === 'group' || lowerName === 'mentorship' || lowerName === 'signals') {
+        programType = lowerName;
+        console.log('✅ Detected as TYPE:', programType);
+    }
+    
+    console.log('🔍 Final program type:', programType);
+    
+    // Try to find program in database using the type
+    if (programType) {
+        const { data: programs, error } = await supabaseClient
+            .from('programs')
+            .select('*')
+            .eq('type', programType)
+            .eq('is_active', true);
+
+        if (!error && programs && programs.length > 0) {
+            const program = programs[0];
+            programPriceUSD = program.price_usd || 0;
+            programPriceNGN = program.price_ngn || (programPriceUSD * exchangeRate);
+            
+            console.log('✅ Found program in DB:', program.name, '$' + programPriceUSD);
+            
+            document.getElementById('programName').innerText = program.name;
+            document.getElementById('programAmount').innerText = '$' + programPriceUSD.toFixed(2);
+            document.getElementById('programAmountNGN').innerText = '₦' + programPriceNGN.toFixed(2);
+            document.getElementById('nairaAmountDisplay').innerHTML = '₦' + programPriceNGN.toFixed(2);
+            updateConverter();
+            return;
+        }
+    }
+
+    // FALLBACK - If database fails, use hardcoded values
+    let priceUSD = 0;
+    let displayName = programName;
+    
+    console.log('⚠️ Using fallback prices');
+    
+    if (lowerName.includes('signal')) {
+        priceUSD = 30;
+        displayName = 'Trading Signals Group';
+    } else if (lowerName.includes('mentorship')) {
+        priceUSD = 100;
+        displayName = 'Advanced SBI 1-on-1 Mentorship';
+    } else if (lowerName.includes('group')) {
+        priceUSD = 25;
+        displayName = 'Advanced SBI Group Access';
+    } else {
+        priceUSD = 0;
+        displayName = programName;
+    }
+    
+    programPriceUSD = priceUSD;
+    programPriceNGN = priceUSD * exchangeRate;
+    
+    document.getElementById('programName').innerText = displayName;
+    document.getElementById('programAmount').innerText = '$' + priceUSD.toFixed(2);
+    document.getElementById('programAmountNGN').innerText = '₦' + programPriceNGN.toFixed(2);
+    document.getElementById('nairaAmountDisplay').innerHTML = '₦' + programPriceNGN.toFixed(2);
+    updateConverter();
+}
+    // =============================================
+    //   CURRENCY CONVERTER
+    // =============================================
+
+    function updateConverter() {
+        document.getElementById('paymentUSD').textContent = programPriceUSD.toFixed(2);
+        document.getElementById('paymentNGN').textContent = programPriceNGN.toFixed(2);
+        document.getElementById('paymentRate').textContent = '₦' + exchangeRate.toFixed(2);
+        document.getElementById('nairaAmountDisplay').innerHTML = '₦' + programPriceNGN.toFixed(2);
+    }
+
+    async function fetchPaymentRate() {
+        try {
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+            const data = await response.json();
+            if (data && data.rates && data.rates.NGN) {
+                exchangeRate = data.rates.NGN;
+                programPriceNGN = programPriceUSD * exchangeRate;
+                document.getElementById('programAmountNGN').innerText = '₦' + programPriceNGN.toFixed(2);
+                updateConverter();
+            }
+        } catch (error) {
+            console.log('Could not fetch rate, using default');
+        }
+    }
+
+    // =============================================
+    //   PAYMENT FUNCTIONS
+    // =============================================
+
+    const studentName = sessionStorage.getItem('studentName') || 'Student';
+    document.getElementById('studentNameDisplay').innerText = 'Student: ' + studentName;
+
+    function togglePayment(method) {
+        const usdtOption = document.getElementById('usdtOption');
+        const nairaOption = document.getElementById('nairaOption');
+
+        if (method === 'usdt') {
+            usdtOption.classList.toggle('active');
+            nairaOption.classList.remove('active');
+        } else {
+            nairaOption.classList.toggle('active');
+            usdtOption.classList.remove('active');
+        }
+    }
+
+    function copyText(elementId, button) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const feedbackId = elementId.replace('Address', 'Feedback');
+            const feedback = document.getElementById(feedbackId);
+            feedback.classList.add('show');
+            button.innerText = '✅ Copied!';
+            button.classList.add('copied');
+            setTimeout(() => {
+                feedback.classList.remove('show');
+                button.innerText = '📋 Copy';
+                button.classList.remove('copied');
+            }, 3000);
+        }).catch(() => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            const feedbackId = elementId.replace('Address', 'Feedback');
+            const feedback = document.getElementById(feedbackId);
+            feedback.classList.add('show');
+            button.innerText = '✅ Copied!';
+            button.classList.add('copied');
+            setTimeout(() => {
+                feedback.classList.remove('show');
+                button.innerText = '📋 Copy';
+                button.classList.remove('copied');
+            }, 3000);
+        });
+    }
+
+    function goToTelegram() {
+    const programName = selectedProgram || 'Trading Program';
+    const name = sessionStorage.getItem('studentName') || studentName || 'Student';
+    const usdAmount = programPriceUSD || 0;
+    const ngnAmount = programPriceNGN || 0;
+
+    const message = `Hello! I have successfully registered on the website.
+
+*Name:* ${name}
+*Program:* ${programName}
+*Amount:* $${usdAmount.toFixed(2)} (₦${ngnAmount.toFixed(2)})
+
+I have made my payment and I am sending my receipt for verification.
+
+Thank you.`;
+
+    const telegramUrl = `https://t.me/IBN_FAHRESY?text=${encodeURIComponent(message)}`;
+    window.open(telegramUrl, '_blank');
+          }
+
+    // =============================================
+    //   INIT
+    // =============================================
+
+    loadProgram();
+
+    setTimeout(() => {
+        document.getElementById('usdtOption').classList.add('active');
+    }, 500);
+
+    // Auto-refresh rate every 5 minutes
+    setInterval(fetchPaymentRate, 300000);
+</script>
+
+</body>
+</html>

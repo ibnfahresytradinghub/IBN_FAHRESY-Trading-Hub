@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | IBN FAHRESY TRADING ACADEMY</title>
+    <meta name="description" content="Login to your IBN FAHRESY TRADING ACADEMY account.">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0f0d;
+            color: #e0e6e3;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            background: 
+                linear-gradient(rgba(22, 199, 132, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(22, 199, 132, 0.03) 1px, transparent 1px),
+                radial-gradient(ellipse at 50% 50%, rgba(22, 199, 132, 0.06), transparent 50%),
+                #0a0f0d;
+            background-size: 30px 30px, 30px 30px, 100% 100%;
+            pointer-events: none;
+        }
+        .login-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(11, 23, 17, 0.92);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(22, 199, 132, 0.2);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 420px;
+            width: 92%;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #16c784;
+            text-align: center;
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #9db0a9;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            color: #b7c2bc;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px;
+            background: #07100c;
+            color: #fff;
+            border: 1px solid rgba(22, 199, 132, 0.2);
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        .form-group input:focus {
+            border-color: #16c784;
+            outline: none;
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: #16c784;
+            color: #001b0d;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-primary:hover {
+            background: #22e69a;
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-primary.loading {
+            position: relative;
+            pointer-events: none;
+        }
+        .btn-primary.loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-left: 10px;
+            border: 2px solid #001b0d;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .error { color: #dc2626; }
+        .success { color: #16c784; }
+        .info { color: #60a5fa; }
+        .forgot-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .forgot-link a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .forgot-link a:hover {
+            text-decoration: underline;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6b7f77;
+        }
+        .register-link a {
+            color: #16c784;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        .motivation-box {
+            background: rgba(22, 199, 132, 0.05);
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border-left: 3px solid #16c784;
+        }
+        .motivation-box p {
+            color: #bccac4;
+            font-size: 13px;
+            font-style: italic;
+            margin: 0;
+            transition: opacity 0.6s ease;
+        }
+        .motivation-box .highlight {
+            color: #16c784;
+            font-weight: 600;
+        }
+        .motivation-box .gold {
+            color: #ffd700;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h1>🔐 IBN_FAHRESY</h1>
+    <p class="subtitle">Login with your Telegram username</p>
+    
+    <!-- ROTATING MOTIVATION - STUDENT LOGIN -->
+    <div class="motivation-box">
+        <p id="loginMotivation">
+            📚 "<span class="highlight">Knowledge is the only thing</span> <span class="gold">that compounds without risk.</span>"
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label>👤 Telegram Username</label>
+        <input type="text" id="telegramUsername" placeholder="@yourusername" required>
+    </div>
+
+    <div class="form-group">
+        <label>🔑 Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+    </div>
+
+    <button class="btn-primary" id="loginBtn" onclick="loginStudent()">
+        🚀 Login
+    </button>
+
+    <div id="message" class="message"></div>
+
+    <div class="forgot-link">
+        <a href="#" onclick="forgotPassword()">🔑 Forgot Password?</a>
+    </div>
+
+    <div class="register-link">
+        Don't have an account? <a href="register.html">Register here</a>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://symuzfndzqjrtavqfoqy.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7xhQ-vLiJIMpeFgvMR3q0Q_QVIQNb1Q";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    // =============================================
+    //   ROTATING MOTIVATION - STUDENT LOGIN
+    // =============================================
+
+    const loginMotivations = [
+        '📚 "<span class="highlight">Knowledge is the only thing</span> <span class="gold">that compounds without risk.</span>"',
+        '🎯 "<span class="highlight">The best investment you can make</span> <span class="gold">is in your trading education.</span>"',
+        '⏳ "<span class="highlight">Patience is not about waiting</span> <span class="gold">it\'s about waiting with purpose.</span>"',
+        '💪 "<span class="highlight">Every loss is a lesson</span> <span class="gold">Every lesson is a step forward.</span>"',
+        '🌟 "<span class="highlight">The trend is your friend</span> <span class="gold">Respect it, and it will respect you.</span>"',
+        '🏆 "<span class="highlight">Trading is not about being right</span> <span class="gold">It\'s about being profitable.</span>"'
+    ];
+
+    let loginMotivationIndex = 0;
+    const loginMotivationElement = document.getElementById('loginMotivation');
+
+    if (loginMotivationElement) {
+        setInterval(() => {
+            loginMotivationElement.style.opacity = '0';
+            setTimeout(() => {
+                loginMotivationIndex = (loginMotivationIndex + 1) % loginMotivations.length;
+                loginMotivationElement.innerHTML = loginMotivations[loginMotivationIndex];
+                loginMotivationElement.style.opacity = '1';
+            }, 400);
+        }, 5000);
+    }
+
+    // =============================================
+    //   STUDENT LOGIN
+    // =============================================
+
+    async function loginStudent() {
+        const username = document.getElementById('telegramUsername').value.trim().replace('@', '');
+        const password = document.getElementById('password').value;
+        const message = document.getElementById('message');
+        const btn = document.getElementById('loginBtn');
+
+        if (!username || !password) {
+            message.className = 'message error';
+            message.innerText = 'Please enter both username and password.';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.className = 'btn-primary loading';
+        btn.innerText = 'Logging in...';
+        message.className = 'message';
+        message.innerText = '';
+
+        try {
+            const hashedPassword = btoa(password + 'ibn_fahresy_salt');
+
+            const { data: student, error } = await supabaseClient
+                .from('students')
+                .select('id, telegram_username, full_name')
+                .eq('telegram_username', username)
+                .eq('password_hash', hashedPassword)
+                .single();
+
+            if (error || !student) {
+                message.className = 'message error';
+                message.innerText = 'Invalid username or password.';
+                btn.disabled = false;
+                btn.className = 'btn-primary';
+                btn.innerText = '🚀 Login';
+                return;
+            }
+
+            sessionStorage.setItem('studentId', student.id);
+            sessionStorage.setItem('telegramUsername', student.telegram_username);
+            sessionStorage.setItem('studentName', student.full_name);
+
+            message.className = 'message success';
+            message.innerText = '✅ Login successful! Redirecting...';
+
+            setTimeout(() => {
+                window.location.href = 'student-dashboard.html';
+            }, 1000);
+
+        } catch (error) {
+            message.className = 'message error';
+            message.innerText = 'Login failed. Please try again.';
+            btn.disabled = false;
+            btn.className = 'btn-primary';
+            btn.innerText = '🚀 Login';
+        }
+    }
+
+    // =============================================
+    //   FORGOT PASSWORD
+    // =============================================
+
+    async function forgotPassword() {
+        const username = document.getElementById('telegramUsername').value.trim().replace('@', '');
+        const message = document.getElementById('message');
+
+        if (!username) {
+            message.className = 'message error';
+            message.innerText = 'Please enter your Telegram username first.';
+            return;
+        }
+
+        const { data: student, error } = await supabaseClient
+            .from('students')
+            .select('telegram_username')
+            .eq('telegram_username', username)
+            .single();
+
+        if (error || !student) {
+            message.className = 'message error';
+            message.innerText = 'No account found with this Telegram username.';
+            return;
+        }
+
+        const messageText = `Hello Admin,
+
+I forgot my password. My Telegram username is: @${username}
+
+Please help me reset my password.
+
+Thank you.`;
+
+        const telegramUrl = `https://t.me/IBN_FAHRESY?text=${encodeURIComponent(messageText)}`;
+
+        message.className = 'message info';
+        message.innerHTML = `
+            <div style="background: rgba(22, 199, 132, 0.08); border: 1px solid rgba(22, 199, 132, 0.2); border-radius: 10px; padding: 15px; text-align: center;">
+                <p style="margin-bottom: 8px; font-size: 14px;">🔑 <strong>Password Reset Request</strong></p>
+                <p style="margin-bottom: 12px; font-size: 13px; color: #bccac4;">Click below to contact the admin with your username.</p>
+                <a href="${telegramUrl}" target="_blank" style="display: inline-block; padding: 10px 25px; background: #0088cc; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px;">
+                    ✈️ Contact Admin on Telegram
+                </a>
+            </div>
+        `;
+    }
+</script>
+
+</body>
+</html>

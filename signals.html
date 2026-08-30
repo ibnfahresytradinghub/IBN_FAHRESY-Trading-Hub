@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Trading Signals Group</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <a href="index.html" class="logo">
+
+        <img src="images/logo.jpg"
+             alt="IBN_FAHRESY Trading Hub Logo">
+
+        <span>IBN_FAHRESY</span>
+
+    </a>
+
+    <a href="index.html"
+       class="back-home">
+
+        ← Back Home
+
+    </a>
+
+</header>
+
+
+<section class="application-section">
+
+    <div class="application-container">
+
+        <div class="application-heading">
+
+            <p class="section-label">
+                TRADING SIGNALS
+            </p>
+
+            <h1>
+
+                Signals Group
+
+                <span>
+                    Monthly Access
+                </span>
+
+            </h1>
+
+            <p>
+
+                Select the month you want access to and
+                complete your application.
+
+            </p>
+
+        </div>
+
+
+        <form id="signalsForm">
+
+
+            <div class="selected-month-box">
+
+                <span>
+                    SELECTED MONTH
+                </span>
+
+                <strong id="selectedMonth">
+                    Loading...
+                </strong>
+
+                <small id="signalPriceDisplay">
+                    Price: Loading...
+                </small>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Full Name
+                </label>
+
+                <input type="text"
+                       name="fullName"
+                       placeholder="Enter your full name"
+                       required>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label>
+                        Email Address
+                    </label>
+
+                    <input type="email"
+                           name="email"
+                           placeholder="Enter your email"
+                           required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        WhatsApp Number
+                    </label>
+
+                    <input type="tel"
+                           name="whatsapp"
+                           placeholder="Enter WhatsApp number"
+                           required>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Country
+                </label>
+
+                <input type="text"
+                       name="country"
+                       placeholder="Your country"
+                       required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    Trading Experience
+                </label>
+
+                <select name="experience" required>
+
+                    <option value="">
+                        Select experience
+                    </option>
+
+                    <option>
+                        Beginner
+                    </option>
+
+                    <option>
+                        Less than 1 year
+                    </option>
+
+                    <option>
+                        1 - 3 years
+                    </option>
+
+                    <option>
+                        More than 3 years
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="agreement-box">
+
+                <label>
+
+                    <input type="checkbox"
+                           required>
+
+                    I confirm that the information provided
+                    is correct and I agree to the terms of
+                    the Signals Group.
+
+                </label>
+
+            </div>
+
+
+            <a href="register.html?program=signals" class="submit-btn" style="display:block;text-align:center;text-decoration:none;">CONTINUE TO PAYMENT</a>
+
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<script src="script.js"></script>
+
+<script>
+    // Get the month from URL and display it
+    const urlParams = new URLSearchParams(window.location.search);
+    const month = urlParams.get("month");
+    const monthDisplay = document.getElementById("selectedMonth");
+    const priceDisplay = document.getElementById("signalPriceDisplay");
+
+    if (month) {
+        monthDisplay.textContent = month;
+    } else {
+        monthDisplay.textContent = "No month selected";
+    }
+
+    // Load signal price from database
+    async function loadSignalPrice() {
+    try {
+        const SUPABASE_URL = "https://symuzfndzqjrtavqfoqy.supabase.co";
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7xhQ-vLiJIMpeFgvMR3q0Q_QVIQNb1Q";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+        const { data: programs, error } = await supabaseClient
+            .from('programs')
+            .select('*')
+            .eq('type', 'signals')
+            .eq('is_active', true);
+
+        if (error || !programs || programs.length === 0) {
+            priceDisplay.textContent = 'Price: $30';
+            return;
+        }
+
+        const program = programs[0];
+        priceDisplay.textContent = 'Price: $' + program.price_usd;
+        
+        // Also update the "Per Selected Month" text if needed
+        const priceSpan = document.querySelector('.selected-month-box small');
+        if (priceSpan) {
+            priceSpan.textContent = 'Access Price: $' + program.price_usd;
+        }
+        
+    } catch (error) {
+        priceDisplay.textContent = 'Price: $30';
+    }
+}
+
+    loadSignalPrice();
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | IBN FAHRESY TRADING ACADEMY</title>
+  <!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16c784">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="images/logo-192x192.png">
+    <meta name="description" content="IBN FAHRESY Trading Academy Admin Dashboard - Manage students, enrollments, payments, and certificates.">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #080e0b;
+        color: #e0e6e3;
+        min-height: 100vh;
+    }
+    header {
+        background: #07100c;
+        padding: 18px 6%;
+        border-bottom: 1px solid rgba(22, 199, 132, 0.2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    header h1 {
+        font-size: 22px;
+        color: #16c784;
+    }
+    header p {
+        color: #9db0a9;
+        font-size: 13px;
+    }
+    header a {
+        color: #16c784;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 20px;
+    }
+    .card {
+        background: #0b1711;
+        border: 1px solid rgba(22, 199, 132, 0.15);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+    .card h2 {
+        color: #16c784;
+        font-size: 20px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .badge {
+        background: rgba(22, 199, 132, 0.15);
+        padding: 3px 12px;
+        border-radius: 20px;
+        color: #16c784;
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+    .hidden {
+        display: none;
+    }
+    .error {
+        color: #dc2626;
+    }
+    .success {
+        color: #16c784;
+    }
+    .message {
+        text-align: center;
+        padding: 40px;
+        color: #bccac4;
+    }
+    .login-card {
+        max-width: 420px;
+        margin: 60px auto;
+    }
+    .login-card input {
+        width: 100%;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        background: #07100c;
+        border: 1px solid rgba(22, 199, 132, 0.25);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 15px;
+    }
+    .login-card input:focus {
+        border-color: #16c784;
+        outline: none;
+    }
+    .login-btn {
+        width: 100%;
+        padding: 14px;
+        background: #16c784;
+        color: #001b0d;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .login-btn:hover {
+        background: #22e69a;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    .stat-card {
+        background: #07100c;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        border: 1px solid rgba(22, 199, 132, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+        border-color: rgba(22, 199, 132, 0.3);
+        transform: translateY(-2px);
+    }
+    .stat-card .number {
+        font-size: 32px;
+        font-weight: 700;
+        color: #16c784;
+    }
+    .stat-card .label {
+        font-size: 13px;
+        color: #9db0a9;
+        margin-top: 5px;
+    }
+    .stat-card .sub {
+        font-size: 11px;
+        color: #6b7f77;
+        margin-top: 3px;
+    }
+
+    /* =============================================
+       NOTIFICATIONS
+       ============================================= */
+    .notification-item {
+        background: rgba(255, 255, 255, 0.03);
+        border-left: 3px solid #f59e0b;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        transition: all 0.3s ease;
+    }
+    .notification-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+    .notification-item .time {
+        font-size: 11px;
+        color: #6b7f77;
+    }
+    .notification-item .msg {
+        color: #bccac4;
+        font-size: 14px;
+        flex: 1;
+        min-width: 150px;
+    }
+    .notification-item .msg strong {
+        color: #fff;
+    }
+    .notification-item .badge-new {
+        background: #16c784;
+        color: #001b0d;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 700;
+    }
+    .notification-item .action-btn {
+        padding: 6px 14px;
+        background: #16c784;
+        color: #001b0d;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+    .notification-item .action-btn:hover {
+        background: #22e69a;
+        transform: scale(1.02);
+    }
+    .notification-item .action-btn.danger {
+        background: #dc2626;
+        color: #fff;
+    }
+    .notification-item .action-btn.danger:hover {
+        background: #b91c1c;
+    }
+    .notification-empty {
+        color: #6b7f77;
+        font-size: 14px;
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+    }
+    .notification-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+    .notification-tabs button {
+        padding: 8px 18px;
+        background: rgba(255, 255, 255, 0.05);
+        color: #bccac4;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .notification-tabs button:hover {
+        background: rgba(22, 199, 132, 0.1);
+        border-color: rgba(22, 199, 132, 0.2);
+    }
+    .notification-tabs button.active {
+        background: rgba(22, 199, 132, 0.15);
+        border-color: #16c784;
+        color: #16c784;
+    }
+    .notification-tabs button .count {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1px 8px;
+        border-radius: 10px;
+        font-size: 11px;
+        margin-left: 5px;
+    }
+    .notification-tabs button.active .count {
+        background: rgba(22, 199, 132, 0.2);
+    }
+
+    /* =============================================
+       STUDENT CARDS
+       ============================================= */
+    .student-card {
+        background: #07100c;
+        border: 1px solid rgba(22, 199, 132, 0.1);
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 15px;
+    }
+    .student-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+    }
+    .student-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+    }
+    .student-email {
+        color: #9db0a9;
+        font-size: 14px;
+    }
+    .student-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 20px;
+        margin: 12px 0;
+    }
+    .student-details p {
+        color: #bccac4;
+        font-size: 14px;
+    }
+    .student-details strong {
+        color: #16c784;
+    }
+    .telegram-link {
+        color: #60a5fa;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    .telegram-link:hover {
+        color: #16c784;
+        text-decoration: underline;
+    }
+    .reset-btn {
+        padding: 8px 20px;
+        background: #f59e0b;
+        color: #000;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+    }
+    .reset-btn:hover {
+        background: #d97706;
+        transform: scale(1.02);
+    }
+    .delete-btn {
+        padding: 8px 20px;
+        background: #dc2626;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+    }
+    .delete-btn:hover {
+        background: #b91c1c;
+        transform: scale(1.02);
+    }
+    .copy-btn {
+        padding: 8px 16px;
+        background: #60a5fa;
+        color: #000;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 12px;
+    }
+    .copy-btn:hover {
+        background: #3b82f6;
+        transform: scale(1.02);
+    }
+    .copy-btn.copied {
+        background: #16c784;
+    }
+    .password-display {
+        background: #07100c;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        color: #ffd700;
+        display: inline-block;
+        border: 1px solid rgba(255, 215, 0, 0.2);
+        margin: 5px 0;
+    }
+    .reset-result {
+        margin-top: 10px;
+        padding: 12px;
+        background: rgba(22, 199, 132, 0.05);
+        border-radius: 8px;
+        border: 1px solid rgba(22, 199, 132, 0.1);
+    }
+    .enrollment-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-top: 10px;
+    }
+    .enrollment-item .program-name {
+        font-weight: 600;
+        color: #fff;
+    }
+    .enrollment-statuses {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+        margin-top: 8px;
+    }
+    .enrollment-statuses select {
+        background: #080e0b;
+        color: #fff;
+        border: 1px solid rgba(22, 199, 132, 0.2);
+        border-radius: 5px;
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    .enrollment-statuses select:focus {
+        border-color: #16c784;
+        outline: none;
+    }
+    .cert-upload {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-top: 10px;
+    }
+    .cert-upload input[type="text"] {
+        flex: 3;
+        min-width: 200px;
+        padding: 10px;
+        background: #07100c;
+        color: #fff;
+        border: 1px solid rgba(22, 199, 132, 0.2);
+        border-radius: 5px;
+    }
+    .cert-upload button {
+        padding: 10px 20px;
+        background: #16c784;
+        color: #001b0d;
+        border: none;
+        border-radius: 5px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .cert-upload button:hover {
+        background: #22e69a;
+    }
+    .cert-link {
+        color: #60a5fa;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .cert-link:hover {
+        text-decoration: underline;
+    }
+    .btn-primary {
+        padding: 10px 20px;
+        background: #16c784;
+        color: #001b0d;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .btn-primary:hover {
+        background: #22e69a;
+    }
+    .btn-danger {
+        padding: 10px 20px;
+        background: #dc2626;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .btn-danger:hover {
+        background: #b91c1c;
+    }
+    .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .search-input {
+        padding: 12px 16px;
+        background: #07100c;
+        border: 1px solid rgba(22, 199, 132, 0.2);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 14px;
+        flex: 1;
+        min-width: 200px;
+    }
+    .search-input:focus {
+        border-color: #16c784;
+        outline: none;
+    }
+    .badge-pending {
+        background: #f59e0b;
+        color: #000;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .badge-verified {
+        background: #16c784;
+        color: #000;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .badge-unpaid {
+        background: #dc2626;
+        color: #fff;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .badge-accepted {
+        background: #16c784;
+        color: #000;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+    .badge-added {
+        background: #16c784;
+        color: #000;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    /* =============================================
+       MODAL OVERLAY
+       ============================================= */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        backdrop-filter: blur(5px);
+    }
+    .modal-overlay.show {
+        display: flex;
+    }
+    .modal-content {
+        background: #0b1711;
+        border: 1px solid rgba(22, 199, 132, 0.2);
+        border-radius: 16px;
+        padding: 35px;
+        max-width: 700px;
+        width: 92%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        animation: modalSlide 0.3s ease;
+    }
+    @keyframes modalSlide {
+        from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        background: none;
+        border: none;
+        color: #6b7f77;
+        font-size: 28px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+    .modal-close:hover {
+        color: #fff;
+    }
+    .modal-content h2 {
+        color: #16c784;
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+    .modal-content .form-group {
+        margin-bottom: 16px;
+    }
+    .modal-content .form-group label {
+        display: block;
+        color: #b7c2bc;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    .modal-content .form-group input,
+    .modal-content .form-group select,
+    .modal-content .form-group textarea {
+        width: 100%;
+        padding: 12px 15px;
+        background: #07100c;
+        color: #fff;
+        border: 1px solid rgba(22, 199, 132, 0.15);
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .modal-content .form-group input:focus,
+    .modal-content .form-group select:focus,
+    .modal-content .form-group textarea:focus {
+        border-color: #16c784;
+        outline: none;
+    }
+    .modal-content .form-group textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+    .modal-content .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #16c784, #0fa968);
+        color: #001b0d;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+    .modal-content .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(22, 199, 132, 0.3);
+    }
+
+    /* =============================================
+       CURRENCY CONVERTER - ADMIN
+       ============================================= */
+    .currency-converter-bar {
+        background: rgba(22, 199, 132, 0.05);
+        border: 1px solid rgba(22, 199, 132, 0.1);
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .currency-converter-bar .rate-label {
+        color: #6b7f77;
+        font-size: 11px;
+    }
+    .currency-converter-bar .rate-value {
+        color: #ffd700;
+        font-weight: 700;
+    }
+    .currency-converter-bar .rate-ngn {
+        color: #16c784;
+        font-weight: 700;
+    }
+    .refresh-rate-btn {
+        padding: 4px 14px;
+        background: rgba(22, 199, 132, 0.1);
+        color: #16c784;
+        border: 1px solid rgba(22, 199, 132, 0.2);
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 11px;
+        transition: all 0.3s ease;
+    }
+    .refresh-rate-btn:hover {
+        background: rgba(22, 199, 132, 0.2);
+    }
+
+    /* =============================================
+       MOBILE LAYOUT
+       ============================================= */
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .student-details {
+            grid-template-columns: 1fr;
+        }
+        .student-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        .reset-result {
+            font-size: 13px;
+        }
+        .modal-content {
+            padding: 20px;
+        }
+    }
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        .stat-card {
+            padding: 15px 10px;
+        }
+        .stat-card .number {
+            font-size: 24px;
+        }
+        .stat-card .label {
+            font-size: 11px;
+        }
+        .student-card {
+            padding: 12px;
+        }
+        .student-name {
+            font-size: 16px;
+        }
+        .enrollment-item {
+            padding: 10px;
+        }
+        .enrollment-statuses {
+            grid-template-columns: 1fr;
+            gap: 5px;
+        }
+        .cert-upload {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .cert-upload input[type="text"] {
+            width: 100%;
+            min-width: 0;
+        }
+        .toolbar {
+            flex-direction: column;
+        }
+        .search-input {
+            min-width: 0;
+            width: 100%;
+        }
+        .reset-btn,
+        .delete-btn {
+            width: 100%;
+            margin-bottom: 5px;
+            margin-right: 0;
+        }
+        .reset-result {
+            font-size: 12px;
+        }
+        .password-display {
+            font-size: 12px;
+            word-break: break-all;
+        }
+        .student-details p {
+            font-size: 13px;
+        }
+        header h1 {
+            font-size: 18px;
+        }
+        header p {
+            font-size: 11px;
+        }
+        .container {
+            padding: 0 10px;
+        }
+        .card {
+            padding: 15px;
+        }
+        .notification-item {
+            padding: 12px;
+        }
+        .notification-item .msg {
+            font-size: 13px;
+        }
+        .notification-tabs button {
+            font-size: 12px;
+            padding: 6px 12px;
+        }
+        .currency-converter-bar {
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+        }
+    }
+    @media (max-width: 360px) {
+        .stat-card {
+            padding: 12px 8px;
+        }
+        .stat-card .number {
+            font-size: 20px;
+        }
+        .student-name {
+            font-size: 14px;
+        }
+    }
+</style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>📊 IBN_FAHRESY Admin</h1>
+            <p>Student & Enrollment Management</p>
+        </div>
+        <a href="index.html">← Back to Home</a>
+    </header>
+
+    <div style="text-align: center; padding: 12px 20px; background: rgba(22, 199, 132, 0.03); border-bottom: 1px solid rgba(22, 199, 132, 0.05); margin-bottom: 15px;">
+        <p style="color: #6b7f77; font-size: 13px; font-style: italic;">
+            🎯 "<span style="color: #16c784;">Building disciplined traders</span> 
+            <span style="color: #ffd700;">one student at a time.</span>"
+        </p>
+    </div>
+
+    <div class="container">
+        <div id="loginCard" class="card login-card">
+            <h2 style="text-align:center;margin-bottom:20px;">🔐 Admin Login</h2>
+            <input type="email" id="adminEmail" placeholder="Admin email">
+            <input type="password" id="adminPassword" placeholder="Password">
+            <button class="login-btn" onclick="adminLogin()">Login</button>
+            <div id="loginMessage" style="margin-top:12px;text-align:center;"></div>
+        </div>
+
+        <div id="dashboard" class="hidden">
+            <div class="card">
+                <div class="toolbar">
+                    <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search by name, email, phone..." onkeyup="filterStudents()">
+                    <button class="btn-primary" onclick="loadDashboard()">🔄 Refresh</button>
+                    <button class="btn-primary" onclick="openAnnouncementModal()">📣 Post Announcement</button>
+                    <button class="btn-primary" onclick="openProgramManager()">💲 Manage Prices</button>
+                    <a href="trading-tools.html" class="btn-primary" style="text-decoration:none;">📊 Trading Tools</a>
+                    <button class="btn-danger" onclick="adminLogout()">Logout</button>
+                </div>
+                <p style="color:#9db0a9;font-size:13px;" id="adminInfo">Logged in as: admin</p>
+            </div>
+
+            <!-- STATS -->
+            <div class="stats-grid" id="statsContainer">
+                <div class="stat-card"><div class="number" id="totalStudents">0</div><div class="label">Total Students</div></div>
+                <div class="stat-card"><div class="number" id="pendingPayments">0</div><div class="label">Pending Payments</div></div>
+                <div class="stat-card"><div class="number" id="activeEnrollments">0</div><div class="label">Active Enrollments</div></div>
+                <div class="stat-card"><div class="number" id="certificatesIssued">0</div><div class="label">Certificates Issued</div></div>
+            </div>
+
+            <!-- NOTIFICATIONS -->
+            <div class="card" id="notificationsCard">
+                <h2>
+                    🔔 Notifications
+                    <span class="badge" id="notificationCount">0</span>
+                </h2>
+                <div class="notification-tabs">
+                    <button class="active" onclick="filterNotifications('all', this)">
+                        All <span class="count" id="allCount">0</span>
+                    </button>
+                    <button onclick="filterNotifications('payment', this)">
+                        💳 Payment <span class="count" id="paymentCount">0</span>
+                    </button>
+                    <button onclick="filterNotifications('new', this)">
+                        🆕 New <span class="count" id="newCount">0</span>
+                    </button>
+                </div>
+                <div id="notificationsContainer">
+                    <div class="notification-empty">Loading notifications...</div>
+                </div>
+            </div>
+
+            <!-- STUDENTS -->
+            <div id="studentsContainer"></div>
+
+            <!-- MODAL - POST ANNOUNCEMENT -->
+            <div class="modal-overlay" id="announcementModal">
+                <div class="modal-content">
+                    <button class="modal-close" onclick="closeAnnouncementModal()">✕</button>
+                    <h2>📣 Post Announcement</h2>
+                    <form id="announcementForm" onsubmit="postAnnouncement(event)">
+                        <div class="form-group">
+                            <label>📌 Title</label>
+                            <input type="text" id="announcementTitle" placeholder="Announcement title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>📝 Content</label>
+                            <textarea id="announcementContent" rows="4" placeholder="Write your announcement here..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>⚠️ Priority</label>
+                            <select id="announcementPriority">
+                                <option value="normal">Normal</option>
+                                <option value="important">Important</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-submit">📣 Post Announcement</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MODAL - MANAGE PROGRAMS -->
+            <div class="modal-overlay" id="programModal">
+                <div class="modal-content" style="max-width: 700px;">
+                    <button class="modal-close" onclick="closeProgramModal()">✕</button>
+                    <h2>💲 Manage Programs & Prices</h2>
+                    
+                    <!-- Currency Converter Bar -->
+                    <div class="currency-converter-bar">
+                        <div>
+                            <span class="rate-label">💵 Exchange Rate</span>
+                            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:3px;">
+                                <span style="font-size:13px;">1 USD = <span class="rate-value" id="adminExchangeRate">₦1,550</span></span>
+                                <span style="font-size:13px;color:#6b7f77;">|</span>
+                                <span style="font-size:13px;">💲 <span id="adminUSD">0</span> = ₦<span class="rate-ngn" id="adminNGN">0</span></span>
+                            </div>
+                        </div>
+                        <button class="refresh-rate-btn" onclick="fetchAdminRate()">🔄 Refresh</button>
+                    </div>
+                    
+                    <div style="margin-bottom:20px;">
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+                            <input type="text" id="newProgramName" placeholder="Program name" style="flex:2;padding:10px;background:#07100c;color:#fff;border:1px solid rgba(22,199,132,0.15);border-radius:8px;">
+                            <input type="number" id="newProgramPriceUSD" placeholder="Price USD ($)" oninput="convertAdminUSD()" style="flex:1;padding:10px;background:#07100c;color:#fff;border:1px solid rgba(22,199,132,0.15);border-radius:8px;">
+                            <input type="number" id="newProgramPriceNGN" placeholder="Price Naira (₦)" oninput="convertAdminNGN()" style="flex:1;padding:10px;background:#07100c;color:#fff;border:1px solid rgba(22,199,132,0.15);border-radius:8px;">
+                            <button class="btn-primary" onclick="addProgram()">➕ Add</button>
+                        </div>
+                        <small style="color:#6b7f77;">Add new program or update existing prices below. Change USD or Naira and the other will auto-convert!</small>
+                    </div>
+                    
+                    <div id="programList" style="max-height:400px;overflow-y:auto;">
+                        Loading programs...
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://symuzfndzqjrtavqfoqy.supabase.co";
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7xhQ-vLiJIMpeFgvMR3q0Q_QVIQNb1Q";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+        let allStudents = [];
+        let allEnrollments = [];
+        let allNotifications = [];
+        let allPrograms = [];
+        let lastResetPassword = '';
+        let adminRate = 1550;
+
+        // =============================================
+        //   ADMIN LOGIN
+        // =============================================
+
+        async function adminLogin() {
+    const email = document.getElementById("adminEmail").value.trim();
+    const password = document.getElementById("adminPassword").value;
+    const message = document.getElementById("loginMessage");
+
+    if (!email || !password) {
+        message.className = "error";
+        message.innerText = "Please enter email and password.";
+        return;
+    }
+
+    message.innerText = "Logging in...";
+    message.className = "";
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+    });
+
+    if (error) {
+        message.className = "error";
+        message.innerText = "Login failed: " + error.message;
+        return;
+    }
+
+    // Show dashboard
+    document.getElementById("loginCard").classList.add("hidden");
+    document.getElementById("dashboard").classList.remove("hidden");
+    document.getElementById("adminInfo").innerText = "Logged in as: " + data.user.email;
+    
+    // ✅ SAVE ADMIN EMAIL - THIS IS THE IMPORTANT LINE!
+    sessionStorage.setItem('adminEmail', data.user.email);
+    
+    // Log to console to verify
+    console.log('✅ Admin email saved:', data.user.email);
+    console.log('✅ Session storage:', sessionStorage.getItem('adminEmail'));
+    
+    loadDashboard();
+}
+
+        // =============================================
+        //   LOAD DASHBOARD
+        // =============================================
+
+        async function loadDashboard() {
+            console.log("🔍 loadDashboard() called!");
+            
+            const container = document.getElementById("studentsContainer");
+            
+            if (!container) {
+                console.error("❌ studentsContainer not found!");
+                return;
+            }
+            
+            container.innerHTML = '<div class="card message">Loading students...</div>';
+
+            try {
+                console.log("🔍 Fetching students from Supabase...");
+                
+                const { data: students, error: studentsError } = await supabaseClient
+                    .from("students")
+                    .select("*")
+                    .order("full_name", { ascending: true });
+
+                if (studentsError) {
+                    console.error("❌ Students Error:", studentsError);
+                    container.innerHTML = '<div class="card error">Error loading students: ' + studentsError.message + '</div>';
+                    return;
+                }
+
+                console.log("✅ Students loaded:", students ? students.length : 0);
+                allStudents = students || [];
+
+                console.log("🔍 Fetching enrollments from Supabase...");
+                
+                const { data: enrollments, error: enrollmentsError } = await supabaseClient
+                    .from("enrollments")
+                    .select("*")
+                    .order("registration_date", { ascending: false });
+
+                if (enrollmentsError) {
+                    console.error("❌ Enrollments Error:", enrollmentsError);
+                    container.innerHTML = '<div class="card error">Error loading enrollments: ' + enrollmentsError.message + '</div>';
+                    return;
+                }
+
+                console.log("✅ Enrollments loaded:", enrollments ? enrollments.length : 0);
+                allEnrollments = enrollments || [];
+                
+                generateNotifications();
+                updateStats();
+                displayStudents(allStudents);
+                displayNotifications('all');
+                
+                console.log("✅ Dashboard loaded successfully!");
+
+            } catch (error) {
+                console.error("❌ Unexpected error:", error);
+                container.innerHTML = '<div class="card error">Unexpected error: ' + error.message + '</div>';
+            }
+        }
+
+        // =============================================
+        //   GENERATE NOTIFICATIONS
+        // =============================================
+
+        function generateNotifications() {
+            console.log("🔍 generateNotifications() called");
+            allNotifications = [];
+
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+            allStudents.forEach(student => {
+                const createdAt = new Date(student.created_at || student.registration_date);
+                if (createdAt >= sevenDaysAgo) {
+                    allNotifications.push({
+                        id: 'new-' + student.id,
+                        type: 'new',
+                        message: `🆕 New student: <strong>${student.full_name || 'Unnamed'}</strong> (@${student.telegram_username})`,
+                        time: createdAt,
+                        studentId: student.id,
+                        read: false
+                    });
+                }
+            });
+
+            allEnrollments.forEach(enrollment => {
+                if (enrollment.payment_status === 'pending' && enrollment.registration_date) {
+                    const regDate = new Date(enrollment.registration_date);
+                    const now = new Date();
+                    const hoursAgo = (now - regDate) / (1000 * 60 * 60);
+
+                    if (hoursAgo < 48) {
+                        const student = allStudents.find(s => s.id === enrollment.student_id);
+                        allNotifications.push({
+                            id: 'payment-' + enrollment.id,
+                            type: 'payment',
+                            message: `💳 <strong>${student?.full_name || 'Student'}</strong> has a pending payment for <strong>${enrollment.program_name}</strong>`,
+                            time: regDate,
+                            studentId: enrollment.student_id,
+                            enrollmentId: enrollment.id,
+                            read: false
+                        });
+                    }
+                }
+            });
+
+            allNotifications.sort((a, b) => b.time - a.time);
+
+            document.getElementById('notificationCount').innerText = allNotifications.length;
+            document.getElementById('allCount').innerText = allNotifications.length;
+            document.getElementById('paymentCount').innerText = allNotifications.filter(n => n.type === 'payment').length;
+            document.getElementById('newCount').innerText = allNotifications.filter(n => n.type === 'new').length;
+        }
+
+        // =============================================
+        //   UPDATE STATS
+        // =============================================
+
+        function updateStats() {
+            console.log("🔍 updateStats() called");
+            document.getElementById("totalStudents").innerText = allStudents.length;
+            const pendingPayments = allEnrollments.filter(e => e.payment_status === 'pending').length;
+            document.getElementById("pendingPayments").innerText = pendingPayments;
+            const activeEnrollments = allEnrollments.filter(e => e.academy_status === 'accepted' || e.academy_status === 'pending').length;
+            document.getElementById("activeEnrollments").innerText = activeEnrollments;
+            const certificatesIssued = allEnrollments.filter(e => e.certificate_url && e.certificate_url.length > 0).length;
+            document.getElementById("certificatesIssued").innerText = certificatesIssued;
+        }
+
+        // =============================================
+        //   DISPLAY NOTIFICATIONS
+        // =============================================
+
+        function filterNotifications(type, button) {
+            document.querySelectorAll('.notification-tabs button').forEach(b => b.classList.remove('active'));
+            if (button) button.classList.add('active');
+            displayNotifications(type);
+        }
+
+        function displayNotifications(type) {
+            const container = document.getElementById('notificationsContainer');
+
+            let filtered = allNotifications;
+            if (type === 'payment') {
+                filtered = allNotifications.filter(n => n.type === 'payment');
+            } else if (type === 'new') {
+                filtered = allNotifications.filter(n => n.type === 'new');
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="notification-empty">
+                        ✨ All clear! No notifications at the moment.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.slice(0, 20).forEach(notification => {
+                const div = document.createElement('div');
+                div.className = 'notification-item';
+
+                const timeStr = notification.time ? 
+                    new Date(notification.time).toLocaleString() : 
+                    'Just now';
+
+                div.innerHTML = `
+                    <div class="msg">${notification.message}</div>
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                        <span class="time">${timeStr}</span>
+                        <span class="badge-new">NEW</span>
+                        ${notification.type === 'payment' ? 
+                            `<button class="action-btn" onclick="markPaymentVerified('${notification.enrollmentId}')">✅ Mark Verified</button>` : 
+                            `<button class="action-btn" onclick="viewStudent('${notification.studentId}')">👤 View Student</button>`
+                        }
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // =============================================
+        //   NOTIFICATION ACTIONS
+        // =============================================
+
+        async function markPaymentVerified(enrollmentId) {
+            if (!confirm('Mark this payment as verified?')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('enrollments')
+                    .update({ payment_status: 'verified' })
+                    .eq('id', enrollmentId);
+
+                if (error) {
+                    alert('Error: ' + error.message);
+                    return;
+                }
+
+                alert('✅ Payment marked as verified!');
+                loadDashboard();
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function viewStudent(studentId) {
+            const studentEl = document.getElementById('student-' + studentId);
+            if (studentEl) {
+                studentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                studentEl.style.borderColor = '#16c784';
+                studentEl.style.transition = 'border-color 0.3s ease';
+                setTimeout(() => {
+                    studentEl.style.borderColor = '';
+                }, 3000);
+            }
+        }
+
+        // =============================================
+        //   DISPLAY STUDENTS
+        // =============================================
+
+        function displayStudents(students) {
+            const container = document.getElementById("studentsContainer");
+            
+            if (!students || students.length === 0) {
+                container.innerHTML = '<div class="card message">No students found.</div>';
+                return;
+            }
+            
+            container.innerHTML = "";
+
+            students.forEach(student => {
+                const studentEnrollments = allEnrollments.filter(e => e.student_id === student.id);
+                const div = document.createElement("div");
+                div.className = "student-card";
+                div.id = "student-" + student.id;
+
+                let enrollmentsHtml = "";
+                if (studentEnrollments.length === 0) {
+                    enrollmentsHtml = '<p style="color:#6b7f77;font-size:13px;">No enrollments yet.</p>';
+                } else {
+                    studentEnrollments.forEach(enrollment => {
+                        const paymentBadge = enrollment.payment_status === 'verified' ? 'badge-verified' : 
+                                              enrollment.payment_status === 'unpaid' ? 'badge-unpaid' : 'badge-pending';
+                        const academyBadge = enrollment.academy_status === 'accepted' ? 'badge-accepted' : 
+                                             enrollment.academy_status === 'rejected' ? 'badge-rejected' : 'badge-pending';
+                        const telegramBadge = enrollment.telegram_status === 'added' ? 'badge-added' : 'badge-pending';
+
+                        let certificateHtml = `<span style="color:#6b7f77;">Not uploaded</span>`;
+                        if (enrollment.certificate_url) {
+                            certificateHtml = `<a href="${enrollment.certificate_url}" target="_blank" class="cert-link">📜 View</a> | <a href="${enrollment.certificate_url}" download class="cert-link">⬇️ Download</a>`;
+                        }
+
+                        enrollmentsHtml += `
+                            <div class="enrollment-item">
+                                <div class="program-name">${enrollment.program_name || 'Program'}</div>
+                                <div style="font-size:12px;color:#6b7f77;margin:3px 0;">Cohort: ${enrollment.cohort || 'Session'}</div>
+                                <div class="enrollment-statuses">
+                                    <div>
+                                        <label>Payment:</label>
+                                        <select onchange="updateEnrollment('${enrollment.id}', 'payment_status', this.value)">
+                                            <option value="pending" ${enrollment.payment_status === 'pending' ? 'selected' : ''}>Pending</option>
+                                            <option value="verified" ${enrollment.payment_status === 'verified' ? 'selected' : ''}>Verified</option>
+                                            <option value="unpaid" ${enrollment.payment_status === 'unpaid' ? 'selected' : ''}>Unpaid</option>
+                                        </select>
+                                        <span class="${paymentBadge}" style="margin-left:5px;">${enrollment.payment_status || 'pending'}</span>
+                                    </div>
+                                    <div>
+                                        <label>Academy:</label>
+                                        <select onchange="updateEnrollment('${enrollment.id}', 'academy_status', this.value)">
+                                            <option value="pending" ${enrollment.academy_status === 'pending' ? 'selected' : ''}>Pending</option>
+                                            <option value="accepted" ${enrollment.academy_status === 'accepted' ? 'selected' : ''}>Accepted</option>
+                                            <option value="rejected" ${enrollment.academy_status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                                        </select>
+                                        <span class="${academyBadge}" style="margin-left:5px;">${enrollment.academy_status || 'pending'}</span>
+                                    </div>
+                                    <div>
+                                        <label>Telegram:</label>
+                                        <select onchange="updateEnrollment('${enrollment.id}', 'telegram_status', this.value)">
+                                            <option value="pending" ${enrollment.telegram_status === 'pending' ? 'selected' : ''}>Pending</option>
+                                            <option value="added" ${enrollment.telegram_status === 'added' ? 'selected' : ''}>Added</option>
+                                        </select>
+                                        <span class="${telegramBadge}" style="margin-left:5px;">${enrollment.telegram_status || 'pending'}</span>
+                                    </div>
+                                    <div>
+                                        <label>Certificate:</label>
+                                        ${certificateHtml}
+                                    </div>
+                                </div>
+                                <div class="cert-upload">
+                                    <input type="text" id="certUrl-${enrollment.id}" placeholder="Paste certificate URL (Google Drive, Cloud, etc.)" style="flex:3;min-width:200px;padding:10px;background:#07100c;color:#fff;border:1px solid rgba(22,199,132,0.2);border-radius:5px;">
+                                    <button onclick="saveCertificateUrl('${enrollment.id}')">💾 Save Certificate</button>
+                                </div>
+                                <div style="margin-top:8px;font-size:11px;color:#6b7f77;">
+                                    Registered: ${new Date(enrollment.registration_date).toLocaleDateString()}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                div.innerHTML = `
+                    <div class="student-header">
+                        <div>
+                            <div class="student-name">👨‍🎓 ${student.full_name || 'Unnamed'}</div>
+                            <div class="student-email">${student.email || student.telegram_username || 'No email'}</div>
+                        </div>
+                        <div style="font-size:12px;color:#6b7f77;">${studentEnrollments.length} enrollment(s)</div>
+                    </div>
+                    <div class="student-details">
+                        <p><strong>Phone:</strong> ${student.phone || '-'}</p>
+                        <p><strong>Country:</strong> ${student.country || '-'}</p>
+                        <p><strong>State:</strong> ${student.state || '-'}</p>
+                        <p><strong>Gender:</strong> ${student.gender || '-'}</p>
+                        <p><strong>Telegram:</strong> 
+                            ${student.telegram_username ? 
+                                `<a href="https://t.me/${student.telegram_username}" target="_blank" class="telegram-link">@${student.telegram_username}</a>` : 
+                                '-'
+                            }
+                        </p>
+                        <p style="grid-column: span 2;">
+                            <button class="reset-btn" onclick="resetStudentPassword('${student.id}', '${student.telegram_username}')">
+                                🔑 Reset Password
+                            </button>
+                            <button class="delete-btn" onclick="deleteStudent('${student.id}', '${student.full_name}')">
+                                🗑️ Delete Student
+                            </button>
+                            <span id="resetResult-${student.id}"></span>
+                        </p>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <strong style="color:#16c784;">Enrollments:</strong>
+                        ${enrollmentsHtml}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // =============================================
+        //   ENROLLMENT FUNCTIONS
+        // =============================================
+
+        async function updateEnrollment(enrollmentId, field, value) {
+            const update = {};
+            update[field] = value;
+            const { error } = await supabaseClient
+                .from("enrollments")
+                .update(update)
+                .eq("id", enrollmentId);
+            if (error) {
+                alert("Update failed: " + error.message);
+                return;
+            }
+            loadDashboard();
+        }
+
+        async function saveCertificateUrl(enrollmentId) {
+            const urlInput = document.getElementById("certUrl-" + enrollmentId);
+            const certificateUrl = urlInput.value.trim();
+
+            if (!certificateUrl) {
+                alert("Please paste a certificate URL.");
+                return;
+            }
+
+            const { error: updateError } = await supabaseClient
+                .from("enrollments")
+                .update({ 
+                    certificate_url: certificateUrl,
+                    certificate_status: 'available'
+                })
+                .eq("id", enrollmentId);
+
+            if (updateError) {
+                alert("Failed to save certificate URL: " + updateError.message);
+                return;
+            }
+
+            alert("✅ Certificate saved successfully!");
+            loadDashboard();
+        }
+
+        // =============================================
+        //   PASSWORD RESET
+        // =============================================
+
+        function generateStrongPassword() {
+            const length = 14;
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=';
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return password;
+        }
+
+        async function resetStudentPassword(studentId, telegramUsername) {
+            if (!confirm(`Reset password for @${telegramUsername}? A strong password will be generated.`)) {
+                return;
+            }
+
+            try {
+                const newPassword = generateStrongPassword();
+                const hashedPassword = btoa(newPassword + 'ibn_fahresy_salt');
+
+                const { error } = await supabaseClient
+                    .from('students')
+                    .update({ password_hash: hashedPassword })
+                    .eq('id', studentId);
+
+                if (error) {
+                    alert('Failed to reset password: ' + error.message);
+                    return;
+                }
+
+                lastResetPassword = newPassword;
+
+                const resultSpan = document.getElementById('resetResult-' + studentId);
+                resultSpan.innerHTML = `
+                    <div class="reset-result">
+                        <span style="color:#bccac4;font-size:12px;">New Password:</span>
+                        <span class="password-display">${newPassword}</span>
+                        <button class="copy-btn" onclick="copyPassword('${newPassword}', this)">📋 Copy</button>
+                        <span style="color:#6b7f77;font-size:11px;display:block;margin-top:5px;">✅ Password reset successful!</span>
+                    </div>
+                `;
+
+                try {
+                    const BOT_TOKEN = "8634258728:AAGpr3wVQZeadpYyfyoAcBDHO3lRkHfwJSw";
+                    const BOT_API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
+
+                    const message = `
+        🔐 *Your Password Has Been Reset*
+
+        Hello @${telegramUsername},
+
+        Your password has been reset by the admin.
+
+        *New Password:* \`${newPassword}\`
+
+        Please login and change your password as soon as possible.
+
+        — IBN_FAHRESY Trading Hub
+                    `;
+
+                    const response = await fetch(`${BOT_API_URL}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: `@${telegramUsername}`,
+                            text: message,
+                            parse_mode: 'Markdown'
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (result.ok) {
+                        resultSpan.innerHTML = `
+                            <div class="reset-result">
+                                <span style="color:#bccac4;font-size:12px;">New Password:</span>
+                                <span class="password-display">${newPassword}</span>
+                                <button class="copy-btn" onclick="copyPassword('${newPassword}', this)">📋 Copy</button>
+                                <span style="color:#16c784;font-size:11px;display:block;margin-top:5px;">✅ Sent to @${telegramUsername} on Telegram!</span>
+                            </div>
+                        `;
+                    }
+                } catch (telegramError) {
+                    console.log('Telegram send failed, but password shown on screen');
+                }
+
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function copyPassword(password, button) {
+            navigator.clipboard.writeText(password).then(() => {
+                button.innerText = '✅ Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.innerText = '📋 Copy';
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = password;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                button.innerText = '✅ Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.innerText = '📋 Copy';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // =============================================
+        //   DELETE STUDENT
+        // =============================================
+
+        async function deleteStudent(studentId, studentName) {
+            if (!confirm(`⚠️ Are you sure you want to delete ${studentName}?\n\nThis will permanently delete:\n- Student profile\n- All enrollments\n- All certificates\n\nThis action CANNOT be undone!`)) {
+                return;
+            }
+
+            if (!confirm(`❗ FINAL WARNING: Are you ABSOLUTELY sure you want to delete ${studentName}?`)) {
+                return;
+            }
+
+            try {
+                const { error: enrollmentsError } = await supabaseClient
+                    .from('enrollments')
+                    .delete()
+                    .eq('student_id', studentId);
+
+                if (enrollmentsError) {
+                    alert('Error deleting enrollments: ' + enrollmentsError.message);
+                    return;
+                }
+
+                const { error: studentError } = await supabaseClient
+                    .from('students')
+                    .delete()
+                    .eq('id', studentId);
+
+                if (studentError) {
+                    alert('Error deleting student: ' + studentError.message);
+                    return;
+                }
+
+                alert(`✅ ${studentName} has been deleted successfully!`);
+                loadDashboard();
+
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // =============================================
+        //   FILTER & SEARCH
+        // =============================================
+
+        function filterStudents() {
+            const search = document.getElementById("searchInput").value.toLowerCase().trim();
+            if (!search) {
+                displayStudents(allStudents);
+                return;
+            }
+            const filtered = allStudents.filter(student => {
+                return (student.full_name && student.full_name.toLowerCase().includes(search)) ||
+                       (student.email && student.email.toLowerCase().includes(search)) ||
+                       (student.phone && student.phone.includes(search)) ||
+                       (student.telegram_username && student.telegram_username.toLowerCase().includes(search));
+            });
+            displayStudents(filtered);
+        }
+
+        // =============================================
+        //   LOGOUT
+        // =============================================
+
+        async function adminLogout() {
+            await supabaseClient.auth.signOut();
+            document.getElementById("dashboard").classList.add("hidden");
+            document.getElementById("loginCard").classList.remove("hidden");
+        }
+      async function adminLogout() {
+    await supabaseClient.auth.signOut();
+    sessionStorage.removeItem('adminEmail'); // Clear admin session
+    console.log('👑 Admin logged out');
+    document.getElementById("dashboard").classList.add("hidden");
+    document.getElementById("loginCard").classList.remove("hidden");
+}
+
+        // =============================================
+        //   ANNOUNCEMENT FUNCTIONS
+        // =============================================
+
+        function openAnnouncementModal() {
+            document.getElementById('announcementModal').classList.add('show');
+            document.getElementById('announcementForm').reset();
+        }
+
+        function closeAnnouncementModal() {
+            document.getElementById('announcementModal').classList.remove('show');
+        }
+
+        async function postAnnouncement(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('announcementTitle').value.trim();
+            const content = document.getElementById('announcementContent').value.trim();
+            const priority = document.getElementById('announcementPriority').value;
+            
+            if (!title || !content) {
+                alert('Please fill in both title and content.');
+                return;
+            }
+            
+            const btn = event.target.querySelector('.btn-submit');
+            btn.disabled = true;
+            btn.textContent = 'Posting...';
+            
+            try {
+                const { error } = await supabaseClient
+                    .from('announcements')
+                    .insert({
+                        title: title,
+                        content: content,
+                        priority: priority
+                    });
+                    
+                if (error) throw error;
+                
+                alert('✅ Announcement posted successfully!');
+                closeAnnouncementModal();
+                loadDashboard();
+                
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '📣 Post Announcement';
+        }
+
+        // =============================================
+        //   PROGRAM MANAGEMENT FUNCTIONS
+        // =============================================
+
+        async function openProgramManager() {
+            document.getElementById('programModal').classList.add('show');
+            await loadPrograms();
+        }
+
+        function closeProgramModal() {
+            document.getElementById('programModal').classList.remove('show');
+        }
+
+        async function loadPrograms() {
+            const container = document.getElementById('programList');
+            container.innerHTML = 'Loading programs...';
+
+            const { data: programs, error } = await supabaseClient
+                .from('programs')
+                .select('*')
+                .order('name');
+
+            if (error) {
+                container.innerHTML = 'Error loading programs: ' + error.message;
+                return;
+            }
+
+            allPrograms = programs || [];
+            
+            if (allPrograms.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:20px;color:#6b7f77;">No programs found. Add your first program above!</div>';
+                return;
+            }
+
+            let html = '';
+            allPrograms.forEach(program => {
+                html += `
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:12px 15px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                        <div style="flex:2;min-width:120px;">
+                            <strong style="color:#fff;">${program.name}</strong>
+                            <div style="font-size:12px;color:#6b7f77;">${program.type || 'General'}</div>
+                        </div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                            <input type="number" id="priceUSD-${program.id}" value="${program.price_usd}" step="0.01" style="width:80px;padding:6px 10px;background:#07100c;color:#fff;border:1px solid rgba(22,199,132,0.15);border-radius:6px;font-size:13px;">
+                            <span style="color:#6b7f77;font-size:12px;">$</span>
+                            <input type="number" id="priceNGN-${program.id}" value="${program.price_ngn || ''}" step="0.01" style="width:80px;padding:6px 10px;background:#07100c;color:#fff;border:1px solid rgba(22,199,132,0.15);border-radius:6px;font-size:13px;">
+                            <span style="color:#6b7f77;font-size:12px;">₦</span>
+                            <button class="btn-primary" onclick="updateProgram('${program.id}')" style="padding:4px 12px;font-size:12px;">💾</button>
+                            <button class="btn-danger" onclick="deleteProgram('${program.id}')" style="padding:4px 12px;font-size:12px;">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        async function addProgram() {
+            const name = document.getElementById('newProgramName').value.trim();
+            const price_usd = parseFloat(document.getElementById('newProgramPriceUSD').value);
+            const price_ngn = parseFloat(document.getElementById('newProgramPriceNGN').value);
+
+            if (!name || !price_usd) {
+                alert('Please enter program name and USD price.');
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('programs')
+                .insert({
+                    name: name,
+                    price_usd: price_usd,
+                    price_ngn: price_ngn || null,
+                    type: 'other',
+                    is_active: true
+                });
+
+            if (error) {
+                alert('Error adding program: ' + error.message);
+                return;
+            }
+
+            document.getElementById('newProgramName').value = '';
+            document.getElementById('newProgramPriceUSD').value = '';
+            document.getElementById('newProgramPriceNGN').value = '';
+            await loadPrograms();
+            alert('✅ Program added successfully!');
+        }
+
+        async function updateProgram(programId) {
+    const price_usd = parseFloat(document.getElementById('priceUSD-' + programId).value);
+    const price_ngn_input = document.getElementById('priceNGN-' + programId).value;
+    let price_ngn = parseFloat(price_ngn_input);
+
+    if (!price_usd) {
+        alert('Please enter a valid USD price.');
+        return;
+    }
+
+    // If Naira field is empty or 0, calculate it using the rate
+    if (!price_ngn || price_ngn === 0) {
+        price_ngn = price_usd * adminRate;
+        document.getElementById('priceNGN-' + programId).value = price_ngn.toFixed(2);
+    }
+
+    const { error } = await supabaseClient
+        .from('programs')
+        .update({
+            price_usd: price_usd,
+            price_ngn: price_ngn
+        })
+        .eq('id', programId);
+
+    if (error) {
+        alert('Error updating program: ' + error.message);
+        return;
+    }
+
+    await loadPrograms();
+    alert('✅ Price updated successfully! $' + price_usd + ' = ₦' + price_ngn.toFixed(2));
+}
+
+        async function deleteProgram(programId) {
+            const program = allPrograms.find(p => p.id === programId);
+            if (!confirm(`Delete "${program?.name || 'this program'}"? This cannot be undone.`)) {
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from('programs')
+                .delete()
+                .eq('id', programId);
+
+            if (error) {
+                alert('Error deleting program: ' + error.message);
+                return;
+            }
+
+            await loadPrograms();
+            alert('🗑️ Program deleted successfully!');
+        }
+
+        // =============================================
+        //   CURRENCY CONVERTER - ADMIN
+        // =============================================
+
+        function convertAdminUSD() {
+            const usd = parseFloat(document.getElementById('newProgramPriceUSD').value) || 0;
+            const ngn = usd * adminRate;
+            document.getElementById('newProgramPriceNGN').value = ngn.toFixed(2);
+            document.getElementById('adminUSD').textContent = usd.toFixed(2);
+            document.getElementById('adminNGN').textContent = ngn.toFixed(2);
+        }
+
+        function convertAdminNGN() {
+            const ngn = parseFloat(document.getElementById('newProgramPriceNGN').value) || 0;
+            const usd = ngn / adminRate;
+            document.getElementById('newProgramPriceUSD').value = usd.toFixed(2);
+            document.getElementById('adminUSD').textContent = usd.toFixed(2);
+            document.getElementById('adminNGN').textContent = ngn.toFixed(2);
+        }
+
+        async function fetchAdminRate() {
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const data = await response.json();
+                if (data && data.rates && data.rates.NGN) {
+                    adminRate = data.rates.NGN;
+                    document.getElementById('adminExchangeRate').textContent = '₦' + adminRate.toFixed(2);
+                }
+            } catch (error) {
+                console.log('Could not fetch rate, using default');
+            }
+        }
+
+        // =============================================
+        //   AUTO-LOGIN CHECK
+        // =============================================
+
+        supabaseClient.auth.getUser().then(({ data }) => {
+    if (data && data.user) {
+        document.getElementById("loginCard").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+        document.getElementById("adminInfo").innerText = "Logged in as: " + data.user.email;
+        
+        // ✅ SAVE ADMIN EMAIL FOR AUTO-LOGIN
+        sessionStorage.setItem('adminEmail', data.user.email);
+        console.log('✅ Auto-login - Admin email saved:', data.user.email);
+        
+        loadDashboard();
+    }
+});
+
+        // Close modals on outside click
+        document.addEventListener('click', function(e) {
+            const modal1 = document.getElementById('announcementModal');
+            if (e.target === modal1) {
+                modal1.classList.remove('show');
+            }
+            const modal2 = document.getElementById('programModal');
+            if (e.target === modal2) {
+                modal2.classList.remove('show');
+            }
+        });
+
+        // Auto-refresh rate every 5 minutes
+        setInterval(fetchAdminRate, 300000);
+    </script>
+  <!-- PWA Service Worker Registration -->
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+                console.log('✅ Service Worker registered:', registration);
+            })
+            .catch(function(error) {
+                console.log('❌ Service Worker registration failed:', error);
+            });
+    }
+</script>
+</body>
+</html>

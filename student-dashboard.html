@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Academy Journey | IBN FAHRESY Trading Academy</title>
+  <!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#16c784">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="images/logo-192x192.png">
+    <meta name="description" content="Your personal IBN FAHRESY Trading Academy dashboard. Track your programs, payments, and certificates.">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #0a0f0d;
+            color: #e0e6e3;
+            min-height: 100vh;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            background: 
+                linear-gradient(rgba(22, 199, 132, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(22, 199, 132, 0.03) 1px, transparent 1px),
+                radial-gradient(ellipse at 50% 50%, rgba(22, 199, 132, 0.05), transparent 50%),
+                #0a0f0d;
+            background-size: 30px 30px, 30px 30px, 100% 100%;
+            pointer-events: none;
+        }
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        header {
+            background: #07100c;
+            padding: 18px 6%;
+            border-bottom: 1px solid rgba(22, 199, 132, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 3;
+        }
+        header h1 {
+            font-size: 20px;
+            color: #16c784;
+        }
+        header a {
+            color: #16c784;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .card {
+            background: rgba(11, 23, 17, 0.92);
+            border: 1px solid rgba(22, 199, 132, 0.15);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .card h2 {
+            color: #16c784;
+            font-size: 22px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card h2 .badge {
+            font-size: 14px;
+            background: rgba(22, 199, 132, 0.15);
+            padding: 3px 12px;
+            border-radius: 20px;
+            color: #16c784;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .message {
+            text-align: center;
+            padding: 40px;
+            color: #bccac4;
+        }
+        .hidden {
+            display: none;
+        }
+        .error {
+            color: #dc2626;
+            border-color: #dc2626;
+        }
+        .welcome {
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+        .email {
+            color: #9db0a9;
+            margin-bottom: 12px;
+        }
+        .motivation-box {
+            background: rgba(22, 199, 132, 0.05);
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin: 12px 0;
+            border-left: 3px solid #16c784;
+        }
+        .motivation-box p {
+            color: #bccac4;
+            font-size: 14px;
+            font-style: italic;
+            margin: 0;
+            transition: opacity 0.6s ease;
+        }
+        .motivation-box .highlight {
+            color: #16c784;
+            font-weight: 600;
+        }
+        .motivation-box .gold {
+            color: #ffd700;
+            font-weight: 600;
+        }
+        .profile-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px 30px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .profile-details p {
+            margin: 0;
+            color: #bccac4;
+        }
+        .profile-details strong {
+            color: #16c784;
+        }
+
+        /* =============================================
+           ANNOUNCEMENTS
+           ============================================= */
+        .announcement-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            border-left: 4px solid #6b7f77;
+            transition: all 0.3s ease;
+        }
+        .announcement-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+        .announcement-item.important {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+        }
+        .announcement-item.urgent {
+            border-left-color: #dc2626;
+            background: rgba(220, 38, 38, 0.05);
+        }
+        .announcement-item .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .announcement-item .title {
+            font-weight: 700;
+            font-size: 16px;
+            color: #fff;
+        }
+        .announcement-item .priority-badge {
+            font-size: 10px;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .announcement-item .priority-badge.normal {
+            background: rgba(107, 127, 119, 0.2);
+            color: #6b7f77;
+        }
+        .announcement-item .priority-badge.important {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        .announcement-item .priority-badge.urgent {
+            background: rgba(220, 38, 38, 0.2);
+            color: #dc2626;
+        }
+        .announcement-item .content {
+            color: #bccac4;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .announcement-item .time {
+            font-size: 11px;
+            color: #6b7f77;
+            margin-top: 8px;
+            display: block;
+        }
+        .announcement-empty {
+            color: #6b7f77;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        /* =============================================
+           ENROLLMENT CARDS
+           ============================================= */
+        .enrollment-card {
+            background: rgba(11, 23, 17, 0.8);
+            border: 1px solid rgba(22, 199, 132, 0.15);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        .enrollment-card:hover {
+            border-color: rgba(22, 199, 132, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        .enrollment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .enrollment-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #fff;
+        }
+        .enrollment-cohort {
+            background: rgba(22, 199, 132, 0.15);
+            color: #16c784;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .enrollment-statuses {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px 15px;
+            margin-top: 8px;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 14px;
+            color: #bccac4;
+        }
+        .status-item span {
+            font-weight: 600;
+        }
+        .status-verified span,
+        .status-accepted span,
+        .status-added span {
+            color: #16c784;
+        }
+        .status-pending span {
+            color: #f59e0b;
+        }
+        .certificate-link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .certificate-link:hover {
+            text-decoration: underline;
+        }
+        .enrollment-actions {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .btn-pay {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ffd700, #f59e0b);
+            color: #001b0d;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+        .btn-pay:active {
+            transform: scale(0.98);
+        }
+        .btn-paid {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-paid:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(96, 165, 250, 0.3);
+        }
+        .btn-paid:active {
+            transform: scale(0.98);
+        }
+        .payment-verified {
+            color: #16c784;
+            font-weight: 700;
+            padding: 8px 16px;
+            background: rgba(22, 199, 132, 0.1);
+            border-radius: 8px;
+            display: inline-block;
+            border: 1px solid rgba(22, 199, 132, 0.2);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .btn-primary {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #16c784, #0fa968);
+            color: #001b0d;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22, 199, 132, 0.3);
+        }
+        .btn-danger {
+            padding: 12px 25px;
+            background: #dc2626;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+        .btn-pay-wrapper {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* =============================================
+           MODAL
+           ============================================= */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-content {
+            background: #0b1711;
+            border: 1px solid rgba(22, 199, 132, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 500px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #6b7f77;
+            font-size: 28px;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            color: #fff;
+        }
+        .modal-content h2 {
+            color: #16c784;
+            margin-bottom: 20px;
+        }
+        .modal-content .form-group {
+            margin-bottom: 16px;
+        }
+        .modal-content .form-group label {
+            display: block;
+            color: #b7c2bc;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        .modal-content .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: #07100c;
+            color: #fff;
+            border: 1px solid rgba(22, 199, 132, 0.2);
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        .modal-content .form-group select:focus {
+            border-color: #16c784;
+            outline: none;
+        }
+        .program-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .program-option {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .program-option:hover {
+            background: rgba(22, 199, 132, 0.05);
+            border-color: rgba(22, 199, 132, 0.2);
+        }
+        .program-option.selected {
+            border-color: #16c784;
+            background: rgba(22, 199, 132, 0.1);
+        }
+        .program-option .name {
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .program-option .price {
+            color: #ffd700;
+            font-size: 13px;
+        }
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .month-option {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            color: #bccac4;
+        }
+        .month-option:hover {
+            background: rgba(22, 199, 132, 0.05);
+            border-color: rgba(22, 199, 132, 0.2);
+        }
+        .month-option.selected {
+            border-color: #16c784;
+            background: rgba(22, 199, 132, 0.1);
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .enrollment-statuses {
+                grid-template-columns: 1fr;
+            }
+            .profile-details {
+                gap: 8px;
+            }
+            .enrollment-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .program-grid {
+                grid-template-columns: 1fr;
+            }
+            .month-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .btn-pay-wrapper {
+                flex-direction: column;
+            }
+            .btn-pay, .btn-paid {
+                width: 100%;
+                text-align: center;
+            }
+            .announcement-item .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📚 IBN_FAHRESY</h1>
+        <a href="index.html">← Back to Home</a>
+    </header>
+    <div class="container">
+        <div id="loading" class="card message">Loading your account...</div>
+        <div id="error" class="card message error hidden"></div>
+        <div id="dashboard" class="hidden">
+            
+            <!-- Profile Card -->
+            <div class="card">
+                <div class="welcome">Welcome, <span id="studentName">Student</span> 👋</div>
+                <div id="studentEmail" class="email"></div>
+                
+                <div class="motivation-box">
+                    <p id="dashboardMotivation">
+                        📚 "<span class="highlight">Knowledge is the only thing</span> <span class="gold">that compounds without risk.</span>"
+                    </p>
+                </div>
+                
+                <div class="profile-details">
+                    <p><strong>Phone:</strong> <span id="phone">-</span></p>
+                    <p><strong>Country:</strong> <span id="country">-</span></p>
+                    <p><strong>State:</strong> <span id="state">-</span></p>
+                </div>
+            </div>
+
+            <!-- ANNOUNCEMENTS -->
+            <div class="card" id="announcementsCard">
+                <h2>📣 Announcements <span class="badge" id="announcementCount">0</span></h2>
+                <div id="announcementsContainer">
+                    <div class="announcement-empty">Loading announcements...</div>
+                </div>
+            </div>
+
+            <!-- Enrollments Card -->
+            <div class="card">
+                <h2>📚 My Academy Journey <span class="badge" id="enrollmentCount">0</span></h2>
+                <div id="enrollments-container"><p>Loading your programs...</p></div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card">
+                <div class="action-buttons">
+                    <button class="btn-primary" onclick="openAddProgram()">➕ Add New Program</button>
+                    <a href="trading-tools.html" class="btn-primary" style="text-decoration:none;">📊 Trading Tools</a>
+                    <button class="btn-danger" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Program Modal -->
+    <div class="modal-overlay" id="addProgramModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAddProgram()">✕</button>
+            <h2>➕ Add New Program</h2>
+            <p style="color:#6b7f77;font-size:14px;margin-bottom:15px;">Select a program to add to your academy journey.</p>
+
+            <div class="form-group">
+                <label>Select Program Type</label>
+                <div class="program-grid">
+                    <div class="program-option" data-program="group" onclick="selectProgramType('group')">
+                        <div class="name">🔥 Group Access</div>
+                        <div class="price" id="price-group">Loading...</div>
+                    </div>
+                    <div class="program-option" data-program="mentorship" onclick="selectProgramType('mentorship')">
+                        <div class="name">👨‍🏫 Mentorship</div>
+                        <div class="price" id="price-mentorship">Loading...</div>
+                    </div>
+                    <div class="program-option" data-program="signals" onclick="selectProgramType('signals')">
+                        <div class="name">📊 Signals</div>
+                        <div class="price" id="price-signals">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="monthSelection" style="display:none;">
+                <div class="form-group">
+                    <label>Select Month</label>
+                    <div class="month-grid">
+                        <div class="month-option" onclick="selectMonth('January')">January</div>
+                        <div class="month-option" onclick="selectMonth('February')">February</div>
+                        <div class="month-option" onclick="selectMonth('March')">March</div>
+                        <div class="month-option" onclick="selectMonth('April')">April</div>
+                        <div class="month-option" onclick="selectMonth('May')">May</div>
+                        <div class="month-option" onclick="selectMonth('June')">June</div>
+                        <div class="month-option" onclick="selectMonth('July')">July</div>
+                        <div class="month-option" onclick="selectMonth('August')">August</div>
+                        <div class="month-option" onclick="selectMonth('September')">September</div>
+                        <div class="month-option" onclick="selectMonth('October')">October</div>
+                        <div class="month-option" onclick="selectMonth('November')">November</div>
+                        <div class="month-option" onclick="selectMonth('December')">December</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="addProgramMessage" class="message" style="margin-top:10px;"></div>
+            <button class="btn-primary" onclick="addProgram()" style="width:100%;margin-top:10px;">✅ Add Program</button>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://symuzfndzqjrtavqfoqy.supabase.co";
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_7xhQ-vLiJIMpeFgvMR3q0Q_QVIQNb1Q";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+        let currentStudentId = null;
+        let selectedProgramType = null;
+        let selectedMonth = null;
+        let programPrices = {};
+
+        // =============================================
+        //   LOAD PROGRAM PRICES
+        // =============================================
+
+        async function loadProgramPrices() {
+            try {
+                const { data: programs, error } = await supabaseClient
+                    .from('programs')
+                    .select('*')
+                    .eq('is_active', true);
+
+                if (error) {
+                    console.error('Error loading prices:', error);
+                    return;
+                }
+
+                programs.forEach(program => {
+                    programPrices[program.type] = program.price_usd;
+                });
+
+                // Update prices in the modal
+                if (programPrices.group) {
+                    document.getElementById('price-group').textContent = '$' + programPrices.group;
+                }
+                if (programPrices.mentorship) {
+                    document.getElementById('price-mentorship').textContent = '$' + programPrices.mentorship;
+                }
+                if (programPrices.signals) {
+                    document.getElementById('price-signals').textContent = '$' + programPrices.signals + '/month';
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // =============================================
+        //   ROTATING MOTIVATION
+        // =============================================
+
+        const dashboardMotivations = [
+            '📚 "<span class="highlight">Knowledge is the only thing</span> <span class="gold">that compounds without risk.</span>"',
+            '🎯 "<span class="highlight">The best investment you can make</span> <span class="gold">is in your trading education.</span>"',
+            '⏳ "<span class="highlight">Patience is not about waiting</span> <span class="gold">it\'s about waiting with purpose.</span>"',
+            '📈 "<span class="highlight">Price action is the language</span> <span class="gold">of the market. Learn to speak it fluently.</span>"',
+            '💪 "<span class="highlight">Every loss is a lesson</span> <span class="gold">Every lesson is a step forward.</span>"',
+            '🌟 "<span class="highlight">The trend is your friend</span> <span class="gold">Respect it, and it will respect you.</span>"',
+            '🔍 "<span class="highlight">Smart Money leaves footprints</span> <span class="gold">Learn to follow them.</span>"',
+            '🏆 "<span class="highlight">Trading is not about being right</span> <span class="gold">It\'s about being profitable.</span>"',
+            '🛡️ "<span class="highlight">Discipline is the bridge</span> <span class="gold">between your goals and your success.</span>"'
+        ];
+
+        let dashboardMotivationIndex = 0;
+        const dashboardMotivationElement = document.getElementById('dashboardMotivation');
+
+        if (dashboardMotivationElement) {
+            setInterval(() => {
+                dashboardMotivationElement.style.opacity = '0';
+                setTimeout(() => {
+                    dashboardMotivationIndex = (dashboardMotivationIndex + 1) % dashboardMotivations.length;
+                    dashboardMotivationElement.innerHTML = dashboardMotivations[dashboardMotivationIndex];
+                    dashboardMotivationElement.style.opacity = '1';
+                }, 400);
+            }, 5000);
+        }
+
+        // =============================================
+        //   GO TO PAYMENT
+        // =============================================
+
+        function goToPayment(programName) {
+    const username = sessionStorage.getItem('telegramUsername');
+    const studentName = sessionStorage.getItem('studentName');
+    
+    if (!programName) {
+        alert('No program selected.');
+        return;
+    }
+
+    const lowerName = programName.toLowerCase();
+    
+    let programType = '';
+    // Check "signal" FIRST
+    if (lowerName.includes('signal')) {
+        programType = 'signals';
+    } else if (lowerName.includes('mentorship')) {
+        programType = 'mentorship';
+    } else if (lowerName.includes('group')) {
+        programType = 'group';
+    } else {
+        programType = programName;
+    }
+    
+    sessionStorage.setItem('studentName', studentName || 'Student');
+    window.location.href = `payment.html?program=${encodeURIComponent(programType)}&username=${encodeURIComponent(username || '')}`;
+}
+        // =============================================
+        //   MARK AS PAID
+        // =============================================
+
+        async function markAsPaid(enrollmentId) {
+            if (!confirm('Have you completed your payment? This will notify the admin to verify your payment.')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('enrollments')
+                    .update({ 
+                        payment_status: 'pending'
+                    })
+                    .eq('id', enrollmentId);
+
+                if (error) {
+                    alert('Error: ' + error.message);
+                    return;
+                }
+
+                alert('✅ Notification sent! The admin will verify your payment soon.');
+                loadStudentData();
+
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // =============================================
+        //   LOAD ANNOUNCEMENTS
+        // =============================================
+
+        async function loadAnnouncements() {
+            const container = document.getElementById('announcementsContainer');
+
+            const { data: announcements, error } = await supabaseClient
+                .from('announcements')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                container.innerHTML = `<div class="announcement-empty">Error loading announcements</div>`;
+                return;
+            }
+
+            document.getElementById('announcementCount').textContent = announcements ? announcements.length : 0;
+
+            if (!announcements || announcements.length === 0) {
+                container.innerHTML = `<div class="announcement-empty">📭 No announcements yet. Check back later!</div>`;
+                return;
+            }
+
+            let html = '';
+            announcements.forEach(ann => {
+                const priorityClass = ann.priority || 'normal';
+                const priorityLabel = ann.priority ? ann.priority.toUpperCase() : 'NORMAL';
+                
+                html += `
+                    <div class="announcement-item ${priorityClass}">
+                        <div class="header">
+                            <span class="title">${ann.title}</span>
+                            <span class="priority-badge ${priorityClass}">${priorityLabel}</span>
+                        </div>
+                        <div class="content">${ann.content}</div>
+                        <span class="time">📅 ${formatDate(ann.created_at)}</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // =============================================
+        //   LOAD STUDENT DATA
+        // =============================================
+async function loadStudentData() {
+    // ✅ FIRST: Load latest program prices from admin
+    await loadProgramPrices();
+    
+    const loading = document.getElementById("loading");
+    const errorBox = document.getElementById("error");
+    const dashboard = document.getElementById("dashboard");
+    const enrollmentsContainer = document.getElementById("enrollments-container");
+
+    const telegramUsername = sessionStorage.getItem('telegramUsername');
+    const studentId = sessionStorage.getItem('studentId');
+
+    if (!telegramUsername || !studentId) {
+        loading.classList.add("hidden");
+        errorBox.classList.remove("hidden");
+        errorBox.innerText = "You are not logged in. Please log in first.";
+        return;
+    }
+
+    currentStudentId = studentId;
+
+    const { data: studentProfile, error: profileError } = await supabaseClient
+        .from("students")
+        .select("*")
+        .eq("id", studentId)
+        .single();
+
+    if (profileError || !studentProfile) {
+        loading.classList.add("hidden");
+        errorBox.classList.remove("hidden");
+        errorBox.innerText = "Could not load your student profile. Please contact the academy.";
+        return;
+    }
+
+    const { data: enrollments, error: enrollmentsError } = await supabaseClient
+        .from("enrollments")
+        .select("*")
+        .eq("student_id", studentProfile.id)
+        .order("registration_date", { ascending: false });
+
+    if (enrollmentsError) {
+        loading.classList.add("hidden");
+        errorBox.classList.remove("hidden");
+        errorBox.innerText = "Could not load your programs.";
+        return;
+    }
+
+    document.getElementById("studentName").innerText = studentProfile.full_name || "Student";
+    document.getElementById("studentEmail").innerText = studentProfile.email || studentProfile.telegram_username;
+    document.getElementById("phone").innerText = studentProfile.phone || "-";
+    document.getElementById("country").innerText = studentProfile.country || "-";
+    document.getElementById("state").innerText = studentProfile.state || "-";
+    document.getElementById("enrollmentCount").innerText = enrollments ? enrollments.length : 0;
+
+    if (!enrollments || enrollments.length === 0) {
+        enrollmentsContainer.innerHTML = `
+            <div class="message">
+                <p>You are not currently enrolled in any programs.</p>
+                <button class="btn-primary" onclick="openAddProgram()" style="margin-top:10px;">➕ Add Your First Program</button>
+            </div>
+        `;
+    } else {
+        enrollmentsContainer.innerHTML = "";
+        enrollments.forEach(enrollment => {
+            const card = document.createElement("div");
+            card.className = "enrollment-card";
+            const paymentClass = enrollment.payment_status === 'verified' ? 'status-verified' : 'status-pending';
+            const academyClass = enrollment.academy_status === 'accepted' ? 'status-accepted' : 'status-pending';
+            const telegramClass = enrollment.telegram_status === 'added' ? 'status-added' : 'status-pending';
+            
+            let certificateHtml = `<span class="status-pending">Not available</span>`;
+            if (enrollment.certificate_url) {
+                certificateHtml = `
+                    <div style="display:flex;flex-direction:column;gap:5px;">
+                        <a href="${enrollment.certificate_url}" target="_blank" class="certificate-link">📜 View Certificate</a>
+                        <a href="${enrollment.certificate_url}" download class="certificate-link">⬇️ Download Certificate</a>
+                    </div>
+                `;
+            }
+
+            let paymentActions = '';
+            if (enrollment.payment_status === 'verified') {
+                paymentActions = `<span class="payment-verified">✅ Payment Verified!</span>`;
+            } else {
+                paymentActions = `
+                    <div class="btn-pay-wrapper">
+                        <button class="btn-pay" onclick="goToPayment('${enrollment.program_name}')">
+                            💳 Pay Now
+                        </button>
+                        <button class="btn-paid" onclick="markAsPaid('${enrollment.id}')">
+                            ✅ I've Paid
+                        </button>
+                    </div>
+                `;
+            }
+            
+            // ✅ GET THE CORRECT PRICE FROM programPrices (loaded from admin)
+let priceUSD = 0;
+const nameLower = (enrollment.program_name || '').toLowerCase();
+
+// Check for "signal" FIRST (because "Signals Group" also contains "group")
+if (nameLower.includes('signal')) {
+    priceUSD = programPrices.signals || 30;
+} else if (nameLower.includes('mentorship')) {
+    priceUSD = programPrices.mentorship || 1000;
+} else if (nameLower.includes('group')) {
+    priceUSD = programPrices.group || 250;
+}
+            
+            // Build display name with correct price
+            let displayName = enrollment.program_name || 'Program';
+            // Remove old price if exists
+            displayName = displayName.replace(/\s*\(\$[0-9]+\s*\)\s*/, '');
+            // Add new correct price
+            if (priceUSD > 0) {
+                displayName = displayName + ' ($' + priceUSD + ')';
+            }
+            
+            card.innerHTML = `
+                <div class="enrollment-header">
+                    <h3>${displayName}</h3>
+                    <span class="enrollment-cohort">${enrollment.cohort || 'Session'}</span>
+                </div>
+                <div class="enrollment-statuses">
+                    <div class="status-item ${paymentClass}">💳 Payment: <span>${enrollment.payment_status || 'pending'}</span></div>
+                    <div class="status-item ${academyClass}">🎓 Academy: <span>${enrollment.academy_status || 'pending'}</span></div>
+                    <div class="status-item ${telegramClass}">📱 Telegram: <span>${enrollment.telegram_status || 'pending'}</span></div>
+                    <div class="status-item">📜 Certificate: ${certificateHtml}</div>
+                </div>
+                <div class="enrollment-actions">
+                    ${paymentActions}
+                </div>
+                <div class="enrollment-footer">
+                    <span class="registration-date">Registered: ${new Date(enrollment.registration_date).toLocaleDateString()}</span>
+                </div>
+            `;
+            enrollmentsContainer.appendChild(card);
+        });
+    }
+
+    // Load announcements
+    await loadAnnouncements();
+
+    loading.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+}
+
+        // =============================================
+        //   ADD PROGRAM FUNCTIONS
+        // =============================================
+
+        function openAddProgram() {
+            document.getElementById('addProgramModal').classList.add('show');
+            document.getElementById('addProgramMessage').className = 'message';
+            document.getElementById('addProgramMessage').innerText = '';
+            selectedProgramType = null;
+            selectedMonth = null;
+            document.querySelectorAll('.program-option').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.month-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById('monthSelection').style.display = 'none';
+        }
+
+        function closeAddProgram() {
+            document.getElementById('addProgramModal').classList.remove('show');
+        }
+
+        function selectProgramType(type) {
+            selectedProgramType = type;
+            document.querySelectorAll('.program-option').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`.program-option[data-program="${type}"]`).classList.add('selected');
+            
+            if (type === 'signals') {
+                document.getElementById('monthSelection').style.display = 'block';
+            } else {
+                document.getElementById('monthSelection').style.display = 'none';
+                selectedMonth = null;
+            }
+            document.getElementById('addProgramMessage').className = 'message';
+            document.getElementById('addProgramMessage').innerText = '';
+        }
+
+        function selectMonth(month) {
+            selectedMonth = month;
+            document.querySelectorAll('.month-option').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('.month-option').forEach(el => {
+                if (el.innerText === month) el.classList.add('selected');
+            });
+        }
+
+        async function addProgram() {
+    const message = document.getElementById('addProgramMessage');
+    
+    // Check if a program type was selected
+    if (!selectedProgramType) {
+        message.className = 'message error';
+        message.innerText = 'Please select a program type.';
+        return;
+    }
+
+    // Get price from database (programPrices is loaded from admin)
+    let priceUSD = 0;
+    if (selectedProgramType === 'group') {
+        priceUSD = programPrices.group || 25;
+    } else if (selectedProgramType === 'mentorship') {
+        priceUSD = programPrices.mentorship || 100;
+    } else if (selectedProgramType === 'signals') {
+        priceUSD = programPrices.signals || 30;
+    }
+
+    // Build the program name
+    let programName = '';
+    if (selectedProgramType === 'group') {
+        programName = `Advanced SBI Group Access ($${priceUSD})`;
+    } else if (selectedProgramType === 'mentorship') {
+        programName = `Advanced SBI 1-on-1 Mentorship ($${priceUSD})`;
+    } else if (selectedProgramType === 'signals') {
+        if (!selectedMonth) {
+            message.className = 'message error';
+            message.innerText = 'Please select a month for signals.';
+            return;
+        }
+        programName = `Signals Group - ${selectedMonth} ($${priceUSD})`;
+    }
+
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerText = 'Adding...';
+    message.className = 'message';
+    message.innerText = '';
+
+    try {
+        const { error: enrollmentError } = await supabaseClient
+            .from('enrollments')
+            .insert({
+                student_id: currentStudentId,
+                program_name: programName,
+                cohort: '2026',
+                payment_status: 'pending',
+                academy_status: 'pending',
+                telegram_status: 'pending',
+                certificate_status: 'pending',
+                registration_date: new Date().toISOString()
+            });
+
+        if (enrollmentError) {
+            throw new Error(enrollmentError.message);
+        }
+
+        message.className = 'message success';
+        message.innerText = '✅ Program added successfully!';
+        btn.disabled = false;
+        btn.innerText = '✅ Add Program';
+
+        setTimeout(() => {
+            closeAddProgram();
+            loadStudentData();
+        }, 1500);
+
+    } catch (error) {
+        message.className = 'message error';
+        message.innerText = 'Error: ' + error.message;
+        btn.disabled = false;
+        btn.innerText = '✅ Add Program';
+    }
+          }
+
+        // =============================================
+        //   HELPERS
+        // =============================================
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // =============================================
+        //   LOGOUT
+        // =============================================
+
+        async function logout() {
+            sessionStorage.clear();
+            window.location.href = "student-login.html";
+        }
+
+        // =============================================
+        //   INIT
+        // =============================================
+
+        loadStudentData();
+
+        // Close modal on outside click
+        document.getElementById('addProgramModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAddProgram();
+        });
+    </script>
+  <!-- PWA Service Worker Registration -->
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+                console.log('✅ Service Worker registered:', registration);
+            })
+            .catch(function(error) {
+                console.log('❌ Service Worker registration failed:', error);
+            });
+    }
+</script>
+</body>
+</html>

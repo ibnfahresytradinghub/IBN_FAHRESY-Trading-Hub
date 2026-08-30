@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Conditions | IBN FAHRESY TRADING ACADEMY</title>
+    <meta name="description" content="Read the Terms & Conditions of IBN FAHRESY Trading Academy. Available in English, Hausa, and Yoruba.">
+    <link rel="stylesheet" href="style.css">
+</head>
+    <style>
+        /* =============================================
+           TERMS & CONDITIONS - PROFESSIONAL STYLES
+           ============================================= */
+        
+        .terms-page {
+            background: #080e0b;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .terms-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(11, 23, 17, 0.95);
+            border: 1px solid rgba(22, 199, 132, 0.15);
+            border-radius: 20px;
+            padding: 50px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .terms-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(22, 199, 132, 0.15);
+        }
+
+        .terms-header .icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .terms-header h1 {
+            color: #16c784;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .terms-header p {
+            color: #9db0a9;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        /* Language Selection */
+        .language-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: rgba(22, 199, 132, 0.05);
+            border-radius: 14px;
+            border: 1px solid rgba(22, 199, 132, 0.1);
+        }
+
+        .language-section h2 {
+            color: #ffd700;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .language-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .language-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            text-decoration: none;
+            color: #bccac4;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .language-card:hover {
+            background: rgba(22, 199, 132, 0.08);
+            border-color: rgba(22, 199, 132, 0.3);
+        }
+
+        .language-card.active {
+            border-color: #16c784;
+            background: rgba(22, 199, 132, 0.12);
+        }
+
+        .language-card .flag {
+            font-size: 24px;
+        }
+
+        .language-card .info h3 {
+            font-size: 15px;
+            color: #fff;
+            margin: 0;
+        }
+
+        .language-card .info p {
+            font-size: 11px;
+            color: #6b7f77;
+            margin: 0;
+        }
+
+        .language-card .check {
+            margin-left: auto;
+            color: #16c784;
+            font-size: 18px;
+            display: none;
+        }
+
+        .language-card.active .check {
+            display: block;
+        }
+
+        /* Terms Content */
+        .terms-content {
+            display: none;
+        }
+
+        .terms-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .terms-content .heading {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .terms-content .heading span {
+            font-size: 32px;
+        }
+
+        .terms-content .heading h2 {
+            color: #fff;
+            font-size: 26px;
+            margin: 0;
+        }
+
+        .terms-content .heading .badge {
+            color: #16c784;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Term Cards */
+        .term-card {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            gap: 20px;
+            padding: 20px 25px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .term-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(22, 199, 132, 0.15);
+            transform: translateX(5px);
+        }
+
+        .term-number {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #16c784, #0fa968);
+            color: #001b0d;
+            font-weight: 900;
+            font-size: 16px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(22, 199, 132, 0.2);
+        }
+
+        .term-card h3 {
+            color: #fff;
+            font-size: 18px;
+            margin: 0 0 8px 0;
+        }
+
+        .term-card p {
+            color: #bccac4;
+            font-size: 14px;
+            line-height: 1.8;
+            margin: 0 0 8px 0;
+        }
+
+        .term-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .term-card strong {
+            color: #ffd700;
+        }
+
+        /* Agreement Box */
+        .agreement-box {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(22, 199, 132, 0.06);
+            border: 1px solid rgba(22, 199, 132, 0.2);
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .agreement-box .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .agreement-box h3 {
+            color: #fff;
+            font-size: 22px;
+            margin: 0 0 10px 0;
+        }
+
+        .agreement-box p {
+            color: #bccac4;
+            font-size: 14px;
+            line-height: 1.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .back-home-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 14px 35px;
+            background: linear-gradient(135deg, #16c784, #0fa968);
+            color: #001b0d;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .back-home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22, 199, 132, 0.3);
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .terms-container {
+                padding: 25px 18px;
+            }
+
+            .language-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .term-card {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 18px;
+            }
+
+            .term-number {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+
+            .terms-header h1 {
+                font-size: 28px;
+            }
+
+            .terms-content .heading h2 {
+                font-size: 22px;
+            }
+
+            .agreement-box {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .terms-container {
+                padding: 18px 12px;
+            }
+
+            .terms-header h1 {
+                font-size: 24px;
+            }
+
+            .term-card h3 {
+                font-size: 16px;
+            }
+
+            .term-card p {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <a href="index.html" class="logo">
+        <img src="images/logo.jpg" alt="IBN_FAHRESY Logo">
+        <span>IBN_FAHRESY</span>
+    </a>
+    <a href="index.html" class="back-home" style="color: #16c784; text-decoration: none; font-weight: bold;">← Back Home</a>
+</header>
+
+<div class="terms-page">
+    <div class="terms-container">
+
+        <!-- HEADER -->
+        <div class="terms-header">
+            <div class="icon">📜</div>
+            <h1>Terms & Conditions</h1>
+            <p>Please read these terms carefully before enrolling, attending our academy, or using our trading services.</p>
+        </div>
+
+        <!-- LANGUAGE SELECTION -->
+        <div class="language-section">
+            <h2>🌍 Choose Your Language</h2>
+            <div class="language-cards">
+                <a href="#" class="language-card active" data-lang="english">
+                    <span class="flag">🇬🇧</span>
+                    <div class="info">
+                        <h3>English</h3>
+                        <p>Terms & Conditions</p>
+                    </div>
+                    <span class="check">✓</span>
+                </a>
+                <a href="#" class="language-card" data-lang="hausa">
+                    <span class="flag">🇳🇬</span>
+                    <div class="info">
+                        <h3>Hausa</h3>
+                        <p>Sharuɗɗa da Ka'idoji</p>
+                    </div>
+                    <span class="check">✓</span>
+                </a>
+                <a href="#" class="language-card" data-lang="yoruba">
+                    <span class="flag">🇳🇬</span>
+                    <div class="info">
+                        <h3>Yoruba</h3>
+                        <p>Àwọn Òfin àti Àdéhùn</p>
+                    </div>
+                    <span class="check">✓</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- =============================================
+             ENGLISH TERMS
+             ============================================= -->
+        <div class="terms-content active" id="english-terms">
+            <div class="heading">
+                <span>🇬🇧</span>
+                <div>
+                    <p class="badge">ENGLISH VERSION</p>
+                    <h2>Our Terms & Conditions</h2>
+                </div>
+            </div>
+
+            <!-- 01 -->
+            <div class="term-card">
+                <div class="term-number">01</div>
+                <div>
+                    <h3>🎓 What We Offer</h3>
+                    <p>IBN_FAHRESY TRADING HUB provides trading education, mentorship, practical learning, physical classes, online classes, trading signals, and learning tools.</p>
+                    <p>Our services are designed to help students understand financial markets and develop better trading knowledge and discipline.</p>
+                </div>
+            </div>
+
+            <!-- 02 -->
+            <div class="term-card">
+                <div class="term-number">02</div>
+                <div>
+                    <h3>📚 Education, Not Financial Advice</h3>
+                    <p>All lessons, discussions, signals, examples, and materials provided by IBN_FAHRESY TRADING HUB are for educational purposes.</p>
+                    <p>We do not provide personal financial or investment advice.</p>
+                </div>
+            </div>
+
+            <!-- 03 -->
+            <div class="term-card">
+                <div class="term-number">03</div>
+                <div>
+                    <h3>⚠️ Trading Involves Risk</h3>
+                    <p>Trading financial and cryptocurrency markets involves risk. You may lose some or all of the money you use for trading.</p>
+                    <p><strong>There is no guaranteed profit.</strong> Always understand the risks before making a trade.</p>
+                </div>
+            </div>
+
+            <!-- 04 -->
+            <div class="term-card">
+                <div class="term-number">04</div>
+                <div>
+                    <h3>💰 No Profit Guarantee</h3>
+                    <p>We do not promise or guarantee profits, fixed income, successful trades, or a specific financial result.</p>
+                    <p>Past results or examples should never be understood as a guarantee of future performance.</p>
+                </div>
+            </div>
+
+            <!-- 05 -->
+            <div class="term-card">
+                <div class="term-number">05</div>
+                <div>
+                    <h3>🧠 Your Trading Responsibility</h3>
+                    <p>Every student is responsible for their own trading decisions.</p>
+                    <p>You are responsible for your account, capital, entries, exits, risk management, profits, and losses.</p>
+                </div>
+            </div>
+
+            <!-- 06 -->
+            <div class="term-card">
+                <div class="term-number">06</div>
+                <div>
+                    <h3>💳 Payments — Done Deal, Here We Go!</h3>
+                    <p>Course fees, mentorship fees, subscriptions, and other selected program payments must be completed according to the payment instructions provided on our website.</p>
+                    <p>Once a payment has been made and confirmed, the selected service will be processed according to the program chosen by the student.</p>
+                </div>
+            </div>
+
+            <!-- 07 -->
+            <div class="term-card">
+                <div class="term-number">07</div>
+                <div>
+                    <h3>🚫 Refund Policy</h3>
+                    <p>Payments are generally non-refundable unless a refund is specifically approved by IBN_FAHRESY TRADING HUB or clearly stated for the selected program.</p>
+                    <p>Please make sure you understand the program you are purchasing before making payment.</p>
+                </div>
+            </div>
+
+            <!-- 08 -->
+            <div class="term-card">
+                <div class="term-number">08</div>
+                <div>
+                    <h3>🔐 Use of Academy Materials</h3>
+                    <p>All videos, lessons, documents, strategies, signals, recordings, graphics, and other academy materials are provided for your personal learning.</p>
+                    <p>You may not copy, sell, publish, distribute, record, or resell our materials without permission.</p>
+                </div>
+            </div>
+
+            <!-- 09 -->
+            <div class="term-card">
+                <div class="term-number">09</div>
+                <div>
+                    <h3>👥 Respect & Student Conduct</h3>
+                    <p>Students are expected to behave respectfully toward instructors, staff, and other students.</p>
+                    <p>Harassment, abuse, threats, fraud, or serious misconduct may result in removal from our programs.</p>
+                </div>
+            </div>
+
+            <!-- 10 -->
+            <div class="term-card">
+                <div class="term-number">10</div>
+                <div>
+                    <h3>📱 Signals & Trading Information</h3>
+                    <p>Trading signals and market information are provided for educational and informational purposes.</p>
+                    <p>Receiving a signal does not mean that a trade is guaranteed to succeed. You remain responsible for deciding whether or not to take any trade.</p>
+                </div>
+            </div>
+
+            <!-- 11 -->
+            <div class="term-card">
+                <div class="term-number">11</div>
+                <div>
+                    <h3>🔒 Account & Access</h3>
+                    <p>We may suspend or terminate access to our programs, groups, materials, or services when a student seriously violates these Terms & Conditions.</p>
+                    <p>We may also take action against unauthorized sharing of paid content or access.</p>
+                </div>
+            </div>
+
+            <!-- 12 -->
+            <div class="term-card">
+                <div class="term-number">12</div>
+                <div>
+                    <h3>🇳🇬 Governing Law & Changes</h3>
+                    <p>These Terms & Conditions are governed by the laws applicable in Nigeria.</p>
+                    <p>IBN_FAHRESY TRADING HUB may update these terms when necessary. Continued use of our services after an update means that you accept the updated terms.</p>
+                </div>
+            </div>
+
+            <!-- AGREEMENT -->
+            <div class="agreement-box">
+                <div class="icon">🤝</div>
+                <h3>Thank You for Choosing IBN_FAHRESY</h3>
+                <p>By enrolling in our academy, attending our classes, subscribing to our signals, or using our services, you confirm that you have read, understood, and agreed to these Terms & Conditions.</p>
+                <a href="index.html" class="back-home-btn">← Back to Home</a>
+            </div>
+        </div>
+
+        <!-- =============================================
+             HAUSA TERMS
+             ============================================= -->
+        <div class="terms-content" id="hausa-terms">
+            <div class="heading">
+                <span>🇳🇬</span>
+                <div>
+                    <p class="badge">SIGAR HAUSA</p>
+                    <h2>Sharuɗɗa da Ka'idoji</h2>
+                </div>
+            </div>
+
+            <div class="term-card"><div class="term-number">01</div><div><h3>🎓 Abin da Muke Bayarwa</h3><p>IBN_FAHRESY TRADING HUB yana koyar da ilimin trading, bada jagoranci da mentorship, darussa na zahiri, darussan online, trading signals da sauran kayan koyo.</p><p>Manufarmu ita ce taimaka wa ɗalibai su fahimci kasuwannin kuɗi da kuma inganta ilimin trading da ƙwarewarsu.</p></div></div>
+            <div class="term-card"><div class="term-number">02</div><div><h3>📚 Ilimi Ne, Ba Shawarar Zuba Jari Ba</h3><p>Duk darussa, bayanai, signals, misalai da kayan koyo da IBN_FAHRESY TRADING HUB ke bayarwa domin ilimi ne.</p><p>Ba ma bayar da shawarar kuɗi ko shawarar zuba jari ta musamman ga mutum.</p></div></div>
+            <div class="term-card"><div class="term-number">03</div><div><h3>⚠️ Trading Yana da Haɗari</h3><p>Trading a kasuwannin cryptocurrency da sauran kasuwannin kuɗi yana da haɗari. Za ka iya rasa wani ɓangare ko duk kuɗin da ka saka a trading.</p><p><strong>Ba a da tabbacin samun riba.</strong> Ka fahimci haɗarin trading kafin ka yi kowace ma'amala.</p></div></div>
+            <div class="term-card"><div class="term-number">04</div><div><h3>💰 Ba Mu Tabbatar da Riba</h3><p>Ba ma yin alkawarin riba, samun kuɗin shiga na dindindin, nasarar trade ko wani takamaiman sakamakon kuɗi.</p><p>Sakamakon da aka samu a baya ba yana nufin za a samu irin wannan sakamakon a gaba ba.</p></div></div>
+            <div class="term-card"><div class="term-number">05</div><div><h3>🧠 Kai Ke da Alhakin Trading ɗinka</h3><p>Kowane ɗalibi shi ne ke da alhakin shawarar trading da yake ɗauka.</p><p>Kai ne ke da alhakin account ɗinka, kuɗinka, shiga trade, fita daga trade, risk management, riba da asara.</p></div></div>
+            <div class="term-card"><div class="term-number">06</div><div><h3>💳 Biyan Kuɗi — An Kammala, Mu Fara!</h3><p>Kuɗin course, mentorship, subscription da sauran shirye-shiryen da ka zaɓa dole ne a biya su bisa umarnin biyan kuɗi da aka nuna a shafinmu.</p><p>Bayan an yi kuma an tabbatar da biyan kuɗi, za a aiwatar da sabis ɗin da ya dace da program da ɗalibi ya zaɓa.</p></div></div>
+            <div class="term-card"><div class="term-number">07</div><div><h3>🚫 Dokar Mayar da Kuɗi</h3><p>A mafi yawan lokuta, ba a mayar da kuɗin da aka biya, sai idan IBN_FAHRESY TRADING HUB ya amince da refund ko kuma an bayyana hakan a cikin program ɗin da aka zaɓa.</p><p>Ka tabbatar ka fahimci program ɗin da kake saya kafin ka yi biyan kuɗi.</p></div></div>
+            <div class="term-card"><div class="term-number">08</div><div><h3>🔐 Amfani da Kayan Koyon Academy</h3><p>Videos, darussa, documents, strategies, signals, recordings, graphics da sauran kayan academy an tanadar su ne domin koyon ɗalibai.</p><p>Ba a yarda a kwafa, sayarwa, wallafawa, rarrabawa, yin recording ko sake sayar da kayanmu ba tare da izini ba.</p></div></div>
+            <div class="term-card"><div class="term-number">09</div><div><h3>👥 Girmamawa da Halayen Ɗalibai</h3><p>Ana buƙatar kowane ɗalibi ya girmama malamai, ma'aikata da sauran ɗalibai.</p><p>Cin zarafi, barazana, zamba ko mummunan hali na iya sa a cire ɗalibi daga program.</p></div></div>
+            <div class="term-card"><div class="term-number">10</div><div><h3>📱 Signals da Bayanan Trading</h3><p>Trading signals da bayanan kasuwa ana bayar da su ne domin ilimi da bayanai.</p><p>Samun signal ba yana nufin trade ɗin zai yi nasara ba. Kai ne ke da alhakin yanke shawarar ko za ka yi trade ko a'a.</p></div></div>
+            <div class="term-card"><div class="term-number">11</div><div><h3>🔒 Account da Samun Dama</h3><p>Za mu iya dakatar ko kawo ƙarshen damar shiga programs, groups, kayan koyo ko services idan ɗalibi ya karya waɗannan Sharuɗɗa da Ka'idoji.</p><p>Haka kuma za mu iya ɗaukar mataki idan aka raba abubuwan da aka biya ko access ba tare da izini ba.</p></div></div>
+            <div class="term-card"><div class="term-number">12</div><div><h3>🇳🇬 Dokar Najeriya da Canje-canje</h3><p>Waɗannan Sharuɗɗa da Ka'idoji suna ƙarƙashin dokokin da suka dace a Najeriya.</p><p>IBN_FAHRESY TRADING HUB na iya sabunta waɗannan sharuɗɗa idan ya zama dole. Ci gaba da amfani da services ɗinmu bayan sabuntawa yana nufin ka amince da sabbin sharuɗɗan.</p></div></div>
+
+            <div class="agreement-box">
+                <div class="icon">🤝</div>
+                <h3>Mun gode da zaɓar IBN_FAHRESY</h3>
+                <p>Ta hanyar yin rajista a academy ɗinmu, halartar darussa, yin subscription na signals ko amfani da services ɗinmu, kana tabbatar da cewa ka karanta, ka fahimta kuma ka amince da waɗannan Sharuɗɗa da Ka'idoji.</p>
+                <a href="index.html" class="back-home-btn">← Koma Gida</a>
+            </div>
+        </div>
+
+        <!-- =============================================
+             YORUBA TERMS
+             ============================================= -->
+        <div class="terms-content" id="yoruba-terms">
+            <div class="heading">
+                <span>🇳🇬</span>
+                <div>
+                    <p class="badge">ÈDÈ YORÙBÁ</p>
+                    <h2>Àwọn Òfin àti Àdéhùn</h2>
+                </div>
+            </div>
+
+            <div class="term-card"><div class="term-number">01</div><div><h3>🎓 Ohun Tí A N Pese</h3><p>IBN_FAHRESY TRADING HUB n pese ẹkọ nipa trading, mentorship ati itọsọna, awọn kilasi ti ara, awọn kilasi online, trading signals ati awọn ohun elo ẹkọ.</p><p>A fẹ́ ran awọn ọmọ ile-ẹkọ lọwọ lati ni oye awọn ọja owo ati lati mu imọ ati agbara wọn ninu trading dara.</p></div></div>
+            <div class="term-card"><div class="term-number">02</div><div><h3>📚 Ẹkọ Ni, Kii Ṣe Imọran Idoko-owo</h3><p>Gbogbo awọn ẹkọ, alaye, signals, apẹẹrẹ ati awọn ohun elo ti IBN_FAHRESY TRADING HUB n pese jẹ fun ẹkọ.</p><p>A ko pese imọran owo tabi imọran idoko-owo ti ara ẹni.</p></div></div>
+            <div class="term-card"><div class="term-number">03</div><div><h3>⚠️ Trading Ní Ewu</h3><p>Trading ninu cryptocurrency ati awọn ọja owo miiran ni ewu. O le padanu apakan tabi gbogbo owo ti o lo fun trading.</p><p><strong>Ko si ere ti a le ṣe idaniloju.</strong> Rii daju pe o ye ewu trading ṣaaju ki o to ṣe trade.</p></div></div>
+            <div class="term-card"><div class="term-number">04</div><div><h3>💰 A Ko Ṣe Ẹri Èrè</h3><p>A ko ṣe ileri tabi ṣe idaniloju èrè, owo-wiwọle ti o wa titi, aṣeyọri ninu trade tabi abajade owo kan pato.</p><p>Abajade ti a ri ni igba atijọ ko tumọ si pe iru abajade bẹ yoo waye ni ọjọ iwaju.</p></div></div>
+            <div class="term-card"><div class="term-number">05</div><div><h3>🧠 Iwọ Ni Ojuse Fun Trading Rẹ</h3><p>Ọmọ ile-ẹkọ kọọkan ni ojuse fun gbogbo ipinnu trading ti o ṣe.</p><p>Iwọ ni o ni ojuse fun account rẹ, owo rẹ, awọn entry, exit, risk management, èrè ati pipadanu.</p></div></div>
+            <div class="term-card"><div class="term-number">06</div><div><h3>💳 Isanwo — A Ti Pari, Jẹ́ Ká Bẹrẹ!</h3><p>Awọn owo course, mentorship, subscription ati awọn program miiran gbọdọ san ni ibamu pẹlu awọn ilana isanwo ti a fi han lori website wa.</p><p>Lẹhin ti a ti san ati jẹrisi owo, a yoo ṣe ilana service ti o baamu pẹlu program ti ọmọ ile-ẹkọ yan.</p></div></div>
+            <div class="term-card"><div class="term-number">07</div><div><h3>🚫 Ilana Pada Owo</h3><p>Ni gbogbogbo, owo ti a ti san kii ṣe refundable, ayafi ti IBN_FAHRESY TRADING HUB ba fọwọsi refund tabi ti a ba sọ eyi ni kedere ninu program ti o yan.</p><p>Jọwọ rii daju pe o loye program ti o n ra ṣaaju ki o to ṣe isanwo.</p></div></div>
+            <div class="term-card"><div class="term-number">08</div><div><h3>🔐 Lilo Awọn Ohun Elo Academy</h3><p>Awọn videos, ẹkọ, documents, strategies, signals, recordings, graphics ati awọn ohun elo academy miiran jẹ fun ẹkọ ti awọn ọmọ ile-ẹkọ wa.</p><p>A ko gba laaye lati daakọ, ta, gbejade, pin, ṣe recording tabi tun ta awọn ohun elo wa laisi igbanilaaye.</p></div></div>
+            <div class="term-card"><div class="term-number">09</div><div><h3>👥 Ọ̀wọ̀ àti Iwa Awọn Ọmọ Ile-ẹkọ</h3><p>A nireti pe gbogbo ọmọ ile-ẹkọ yoo bọwọ fun awọn olukọ, awọn oṣiṣẹ ati awọn ọmọ ile-ẹkọ miiran.</p><p>Iwa ibajẹ, irokeke, jegudujera tabi iwa aiṣedeede le fa ki a yọ ọmọ ile-ẹkọ kuro ninu program.</p></div></div>
+            <div class="term-card"><div class="term-number">10</div><div><h3>📱 Signals àti Alaye Trading</h3><p>Trading signals ati alaye ọja ni a pese fun ẹkọ ati alaye nikan.</p><p>Gbigba signal ko tumọ si pe trade yoo ṣaṣeyọri. Iwọ ni o pinnu boya iwọ yoo ṣe trade tabi rara.</p></div></div>
+            <div class="term-card"><div class="term-number">11</div><div><h3>🔒 Account àti Wiwọle</h3><p>A le dawọ tabi fagilee iwọle si programs, groups, awọn ohun elo ẹkọ tabi services ti ọmọ ile-ẹkọ ba rú awọn Àdéhùn àti Òfin wọnyi.</p><p>A tun le gbe igbese ti ẹnikan ba n pin awọn ohun elo ti a sanwo fun tabi access laisi igbanilaaye.</p></div></div>
+            <div class="term-card"><div class="term-number">12</div><div><h3>🇳🇬 Ofin Naijiria àti Àwọn Ayipada</h3><p>Awọn Àdéhùn àti Òfin wọnyi wa labẹ awọn ofin to wulo ni Naijiria.</p><p>IBN_FAHRESY TRADING HUB le ṣe imudojuiwọn awọn ofin wọnyi nigbati o ba jẹ dandan. Tesiwaju lilo services wa lẹhin imudojuiwọn tumọ si pe o gba awọn ofin tuntun.</p></div></div>
+
+            <div class="agreement-box">
+                <div class="icon">🤝</div>
+                <h3>O ṣeun fun yiyan IBN_FAHRESY</h3>
+                <p>Nipa fiforukọṣilẹ ni academy wa, wiwa si awọn kilasi, ṣiṣe subscription fun signals tabi lilo services wa, o jẹrisi pe o ti ka, loye ati gba awọn Àdéhùn àti Òfin wọnyi.</p>
+                <a href="index.html" class="back-home-btn">← Pada si Ile</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // =============================================
+    //   LANGUAGE SWITCHER
+    // =============================================
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const languageCards = document.querySelectorAll('.language-card');
+        const contents = {
+            english: document.getElementById('english-terms'),
+            hausa: document.getElementById('hausa-terms'),
+            yoruba: document.getElementById('yoruba-terms')
+        };
+
+        function switchLanguage(lang) {
+            // Hide all
+            Object.values(contents).forEach(el => el.classList.remove('active'));
+            
+            // Show selected
+            if (contents[lang]) {
+                contents[lang].classList.add('active');
+            }
+
+            // Update cards
+            languageCards.forEach(card => {
+                card.classList.remove('active');
+                if (card.dataset.lang === lang) {
+                    card.classList.add('active');
+                }
+            });
+        }
+
+        languageCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                const lang = this.dataset.lang;
+                switchLanguage(lang);
+            });
+        });
+
+        // Default: English
+        switchLanguage('english');
+    });
+</script>
+
+</body>
+</html>
